@@ -9,7 +9,7 @@ setup(
     package_dir={"": "src"},
     install_requires=[
         "httpx>=0.25.0",
-        "pydantic>=2.5.0",
+        "pydantic>=2.12.5,<2.13",
         "python-dotenv>=1.0.0",
     ],
     extras_require={

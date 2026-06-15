@@ -1,13 +1,8 @@
-langraph==0.1.5
-langgraph[extended]==0.1.5
-langchain==0.1.0
-langchain-openai==0.0.2
-langchain-anthropic==0.1.0
 python-dotenv==1.0.0
 httpx==0.25.0
-pydantic==2.5.0
+pydantic==2.12.5
 pydantic-settings==2.1.0
 requests==2.31.0
-typing-extensions==4.8.0
+typing-extensions==4.14.1
 tenacity==8.2.3
--e ../packages/memwal-adapter
+-e ../../packages/memwal-adapter

@@ -1,0 +1,97 @@
+{
+  "research:test-memwal-001": {
+    "data": {
+      "result": {
+        "task_id": "test-memwal-001",
+        "description": "Test MemWal integration",
+        "sources": [
+          {
+            "title": "Research Source 1",
+            "url": "https://example.com/source1",
+            "content": "Sample research content for source 1",
+            "timestamp": "2026-06-16T00:16:22.893835"
+          },
+          {
+            "title": "Research Source 2",
+            "url": "https://example.com/source2",
+            "content": "Sample research content for source 2",
+            "timestamp": "2026-06-16T00:16:22.893854"
+          },
+          {
+            "title": "Research Source 3",
+            "url": "https://example.com/source3",
+            "content": "Sample research content for source 3",
+            "timestamp": "2026-06-16T00:16:22.893860"
+          }
+        ],
+        "summary": "Researched: Test MemWal integration. Found 3 relevant sources.",
+        "created_at": "2026-06-16T00:16:22.893868"
+      },
+      "walrus_cid": "local://test-memwal-001_research.json",
+      "confidence": 0.75
+    },
+    "metadata": {},
+    "saved_at": "2026-06-15T23:16:25.949053",
+    "proof": "proof-75737594-6fba-45a2-87e0-4ffaf0c26c50"
+  },
+  "architect:test-memwal-001": {
+    "data": {
+      "task_id": "test-memwal-001",
+      "artifacts": [
+        {
+          "name": "research_summary.md",
+          "type": "report",
+          "walrus_cid": "local://research_summary.md",
+          "metadata": {
+            "format": "markdown",
+            "research_task_id": "test-memwal-001"
+          }
+        },
+        {
+          "name": "data_export.json",
+          "type": "dataset",
+          "walrus_cid": "local://data_export.json",
+          "metadata": {
+            "format": "json",
+            "total_records": 3
+          }
+        }
+      ],
+      "synthesis_notes": "Synthesized 3 sources into 2 artifacts.",
+      "decisions": [
+        "Chose markdown format for the summary for human readability.",
+        "Exported research sources as JSON for structured downstream processing."
+      ],
+      "created_at": "2026-06-16T00:16:31.419758"
+    },
+    "metadata": {},
+    "saved_at": "2026-06-15T23:16:32.481072",
+    "proof": "proof-1426dedf-ee38-4ed4-afdc-872bc6ad677e"
+  },
+  "audit:test-memwal-001": {
+    "data": {
+      "task_id": "test-memwal-001",
+      "findings": [
+        {
+          "severity": "info",
+          "message": "Found 2 artifacts for review",
+          "artifact_name": null,
+          "suggested_action": ""
+        },
+        {
+          "severity": "info",
+          "message": "Architect decisions were loaded from MemWal context",
+          "artifact_name": null,
+          "suggested_action": "Review referenced decisions in the artifact metadata"
+        }
+      ],
+      "quality_score": 100,
+      "approved": true,
+      "feedback": "Quality review complete. Score: 100%. Status: \u2705 APPROVED",
+      "completed_at": "2026-06-16T00:16:33.744516"
+    },
+    "metadata": {},
+    "saved_at": "2026-06-15T23:16:34.461204",
+    "proof": "proof-9a5893df-9081-42f2-befb-15a33a809e6e"
+  }
+}
