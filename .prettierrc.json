@@ -1,0 +1,22 @@
+.nvmrc
+10.0.0
+
+.eslintignore
+node_modules
+dist
+build
+
+.prettierrc.json
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 100
+}
+
+.prettierignore
+node_modules
+dist
+build
+*.lock
