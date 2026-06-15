@@ -1,5 +1,6 @@
 """MemWal Adapter - Core client for MemWal API."""
 
+import asyncio
 import httpx
 import logging
 from typing import Dict, Any, Optional
@@ -56,12 +57,12 @@ class MemWalClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         try:
-            response = await self.client.post(
+            response = await self._request_with_retry(
+                "POST",
                 f"{self.endpoint}/memory/save",
                 json=payload,
                 headers=headers,
             )
-            response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
             logger.error(f"Failed to save memory: {e}")
@@ -82,13 +83,13 @@ class MemWalClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         try:
-            response = await self.client.get(
+            response = await self._request_with_retry(
+                "GET",
                 f"{self.endpoint}/memory/{key}",
                 headers=headers,
             )
             if response.status_code == 404:
                 return None
-            response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
             logger.error(f"Failed to read memory: {e}")
@@ -113,12 +114,12 @@ class MemWalClient:
             params["prefix"] = prefix
 
         try:
-            response = await self.client.get(
+            response = await self._request_with_retry(
+                "GET",
                 f"{self.endpoint}/memory/keys",
                 params=params,
                 headers=headers,
             )
-            response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
             logger.error(f"Failed to list keys: {e}")
@@ -140,17 +141,37 @@ class MemWalClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         try:
-            response = await self.client.post(
+            response = await self._request_with_retry(
+                "POST",
                 f"{self.endpoint}/memory/{key}/verify",
                 json={"proof": proof},
                 headers=headers,
             )
-            response.raise_for_status()
             result = response.json()
             return result.get("valid", False)
         except httpx.HTTPError as e:
             logger.error(f"Failed to verify proof: {e}")
             return False
+
+    async def _request_with_retry(self, method: str, url: str, **kwargs) -> httpx.Response:
+        attempts = 3
+        delay = 0.5
+        for attempt in range(1, attempts + 1):
+            try:
+                response = await self.client.request(method, url, **kwargs)
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as exc:
+                if response := getattr(exc, 'response', None):
+                    if response.status_code == 404:
+                        return response
+                logger.warning("MemWal request failed (status %s) on attempt %s: %s", getattr(exc, 'response', None).status_code if getattr(exc, 'response', None) is not None else 'unknown', attempt, exc)
+            except httpx.HTTPError as exc:
+                logger.warning("MemWal request network error on attempt %s: %s", attempt, exc)
+            if attempt < attempts:
+                await asyncio.sleep(delay)
+                delay *= 2
+        raise httpx.HTTPError(f"MemWal request failed after {attempts} attempts")
 
     async def close(self):
         """Close the HTTP client."""

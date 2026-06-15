@@ -1,7 +1,5 @@
 'use client'
 
-import { Clock, FileStack, Zap, AlertCircle } from 'lucide-react'
-
 export default function DashboardHome() {
   return (
     <div className="p-8">

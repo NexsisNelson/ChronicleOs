@@ -2,9 +2,11 @@
 
 import logging
 from typing import List
+from datetime import datetime
 
 from src.config import ChronicleConfig
 from src.models.types import ArchitectureResult, AuditResult, AuditFinding
+from src.tools.memwal_tools import read_from_memwal, save_to_memwal
 
 logger = logging.getLogger(__name__)
 
@@ -27,50 +29,78 @@ class AuditorAgent:
             AuditResult with findings and quality score
         """
         logger.info(f"{self.name}: Starting quality review")
-        
-        # Phase 1: Placeholder implementation
-        # In Phase 2, this will:
-        # - Use LLM to evaluate artifacts
-        # - Check artifact completeness and accuracy
-        # - Read shared MemWal context to understand architect decisions
-        # - Generate detailed findings
-        
-        findings = []
-        
-        # Placeholder quality checks
-        if len(architecture.artifacts) == 0:
+
+        architect_context = await read_from_memwal(f"architect:{architecture.task_id}")
+        findings: List[AuditFinding] = []
+
+        if not architecture.artifacts:
             findings.append(AuditFinding(
                 severity="error",
                 message="No artifacts generated",
-                suggested_action="Architect must generate at least one artifact"
+                suggested_action="Architect must generate at least one artifact",
             ))
         else:
             findings.append(AuditFinding(
                 severity="info",
                 message=f"Found {len(architecture.artifacts)} artifacts for review",
             ))
-        
+
         if not architecture.synthesis_notes:
             findings.append(AuditFinding(
                 severity="warning",
                 message="Synthesis notes are empty",
-                suggested_action="Architect should document synthesis decisions"
+                suggested_action="Architect should document synthesis decisions",
             ))
-        
-        # Calculate quality score
-        errors = len([f for f in findings if f.severity == "error"])
-        warnings = len([f for f in findings if f.severity == "warning"])
-        quality_score = max(0, 100 - (errors * 20 + warnings * 5))
-        
-        approved = quality_score >= 70 and errors == 0
-        
+
+        if architect_context:
+            findings.append(AuditFinding(
+                severity="info",
+                message="Architect decisions were loaded from MemWal context",
+                suggested_action="Review referenced decisions in the artifact metadata",
+            ))
+        else:
+            findings.append(AuditFinding(
+                severity="warning",
+                message="No architect context found in MemWal",
+                suggested_action="Ensure architect decisions are persisted to MemWal",
+            ))
+
+        for artifact in architecture.artifacts:
+            if not artifact.walrus_cid:
+                findings.append(AuditFinding(
+                    severity="warning",
+                    message=f"Artifact {artifact.name} has no Walrus CID",
+                    suggested_action="Save artifacts to Walrus before review",
+                ))
+
+        errors = len([item for item in findings if item.severity == "error"])
+        warnings = len([item for item in findings if item.severity == "warning"])
+        quality_score = max(0, 100 - (errors * 25 + warnings * 6))
+        approved = quality_score >= 75 and errors == 0
+
+        feedback = (
+            f"Quality review complete. Score: {quality_score:.0f}%. "
+            f"Status: {'✅ APPROVED' if approved else '⚠️ NEEDS REVISION'}"
+        )
+
+        audit_payload = {
+            "task_id": architecture.task_id,
+            "findings": [f.__dict__ for f in findings],
+            "quality_score": quality_score,
+            "approved": approved,
+            "feedback": feedback,
+            "completed_at": datetime.now().isoformat(),
+        }
+
+        await save_to_memwal(f"audit:{architecture.task_id}", audit_payload)
+
         result = AuditResult(
             task_id=architecture.task_id,
             findings=findings,
             quality_score=quality_score,
             approved=approved,
-            feedback=f"Quality review complete. Score: {quality_score:.0f}%. Status: {'✅ APPROVED' if approved else '⚠️  NEEDS REVISION'}",
+            feedback=feedback,
         )
-        
+
         logger.info(f"{self.name}: Review complete. Quality: {quality_score:.0f}%. Approved: {approved}")
         return result

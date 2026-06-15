@@ -1,44 +1,52 @@
 """Tools for MemWal integration (Phase 2)."""
 
-# Placeholder for MemWal API integration
-# In Phase 2, this will provide:
-# - save_to_memwal(key: str, data: Dict) -> proof
-# - read_from_memwal(key: str) -> Dict
-# - list_memwal_keys() -> List[str]
+import logging
+from typing import Any, Dict, List, Optional
+
+from src.config import get_config
+from memwal_adapter.core.client import MemWalClient
+
+logger = logging.getLogger(__name__)
 
 
-async def save_to_memwal(key: str, data: dict) -> str:
+async def save_to_memwal(
+    key: str,
+    data: Dict[str, Any],
+    metadata: Optional[Dict[str, Any]] = None,
+) -> str:
     """Save data to MemWal with cryptographic proof.
-    
+
     Args:
         key: Unique key for this memory entry
         data: Data to store
-        
+        metadata: Optional metadata
+
     Returns:
         Cryptographic proof of storage
     """
-    # Phase 2: Integrate MemWal API
-    return "memwal_proof_placeholder"
+    config = get_config()
+    async with MemWalClient(config.memwal_endpoint, config.memwal_api_key) as client:
+        result = await client.save_memory(key, data, metadata)
+        return result.get("proof") or result.get("signature") or result.get("id") or ""
 
 
-async def read_from_memwal(key: str) -> dict:
+async def read_from_memwal(key: str) -> Dict[str, Any]:
     """Read data from MemWal.
-    
+
     Args:
         key: Key to retrieve
-        
+
     Returns:
         Stored data
     """
-    # Phase 2: Integrate MemWal API
-    return {"placeholder": True}
+    config = get_config()
+    async with MemWalClient(config.memwal_endpoint, config.memwal_api_key) as client:
+        result = await client.read_memory(key)
+        return result or {}
 
 
-async def list_memwal_keys() -> list:
-    """List all keys in MemWal memory.
-    
-    Returns:
-        List of memory keys
-    """
-    # Phase 2: Integrate MemWal API
-    return []
+async def list_memwal_keys(prefix: Optional[str] = None) -> List[str]:
+    """List all keys in MemWal memory."""
+    config = get_config()
+    async with MemWalClient(config.memwal_endpoint, config.memwal_api_key) as client:
+        return await client.list_memory_keys(prefix=prefix)

@@ -1,5 +1,6 @@
 'use client'
 
+// Placeholder page for live agent monitoring functionality planned in Phase 3.
 export default function AgentsPage() {
   return (
     <div className="p-8">

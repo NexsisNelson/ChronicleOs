@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - apps/dashboard/.env.example
+    depends_on:
+      - memwal
+
+  memwal:
+    image: memwal/memwal:latest
+    ports:
+      - '8000:8000'
+    environment:
+      RUST_LOG: info
+    volumes:
+      - memwal_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  memwal_data:

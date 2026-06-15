@@ -17,7 +17,7 @@
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-tabs": "^1.0.4",
     "recharts": "^2.10.3",
-    "tremor": "^3.13.0",
+    "@tremor/react": "^3.18.7",
     "lucide-react": "^0.292.0",
     "axios": "^1.6.0",
     "zustand": "^4.4.0",

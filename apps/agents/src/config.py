@@ -11,6 +11,9 @@ class ChronicleConfig(BaseSettings):
     
     # Walrus
     walrus_endpoint: str = "https://walrus-devnet.sui.io"
+    walrus_upload_path: str = "/blobs"
+    walrus_download_path: str = "/blobs/{cid}"
+    walrus_metadata_path: str = "/blobs/{cid}/metadata"
     walrus_private_key: Optional[str] = None
     walrus_gas_budget: int = 100_000_000
     
