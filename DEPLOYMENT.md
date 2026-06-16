@@ -33,6 +33,30 @@ docker-compose -f docker-compose.prod.yml up --build
 - Dashboard: `http://localhost:3000`
 - Dashboard health: `http://localhost:3000/api/health`
 - MemWal service: `http://localhost:8000/health`
+- Walrus gateway: `http://localhost:8001/blobs/{cid}`
+
+## Testnet deployment
+
+For a clean testnet deployment that uses remote Walrus testnet storage and local MemWal, use the dedicated compose stack:
+
+```bash
+docker-compose -f docker-compose.testnet.yml up --build
+```
+
+Then copy the provided testnet env templates:
+
+```bash
+cp apps/dashboard/.env.testnet.example apps/dashboard/.env.local
+cp apps/agents/.env.testnet.example apps/agents/.env
+```
+
+Set the real secrets in `apps/agents/.env`:
+
+- `WALRUS_PRIVATE_KEY=<your-sui-private-key>`
+- `MEMWAL_API_KEY=<your-memwal-api-key>`
+- `OPENAI_API_KEY=<your-openai-key>`
+
+If you need a hosted MemWal endpoint instead of the local container, update `MEMWAL_ENDPOINT` in `apps/agents/.env` and `NEXT_PUBLIC_MEMWAL_API` in `apps/dashboard/.env.local`.
 
 ## Running the agents container
 
@@ -46,6 +70,12 @@ docker run --rm \
   -e OPENAI_API_KEY=<your-openai-key> \
   chronicle-agents \
   --task "Analyze the latest trends in decentralized storage"
+```
+
+For a compose-based production stack, the agents service can use the built-in Walrus and MemWal services without host.docker.internal:
+
+```bash
+docker-compose -f docker-compose.prod.yml up --build
 ```
 
 > If you run the agents container from a different Docker network, replace `host.docker.internal` with the proper MemWal host or service name.

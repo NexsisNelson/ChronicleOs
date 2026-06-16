@@ -8,6 +8,7 @@ const client = new MemWalClient()
 export default function AgentsPage() {
   const [loading, setLoading] = useState(true)
   const [memwalStatus, setMemwalStatus] = useState('Checking MemWal connection...')
+  const [memwalHealth, setMemwalHealth] = useState<string | null>(null)
   const [memwalCount, setMemwalCount] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -17,13 +18,25 @@ export default function AgentsPage() {
       setError(null)
 
       try {
+        const health = await client.checkHealth()
+        if (health?.status?.toLowerCase() === 'ok') {
+          setMemwalStatus('Connected to MemWal')
+          setMemwalHealth(`Healthy — ${health.timestamp ?? 'unknown'}`)
+        } else if (health) {
+          setMemwalStatus(`MemWal responded: ${health.status}`)
+          setMemwalHealth(`Timestamp: ${health.timestamp ?? 'unknown'}`)
+        } else {
+          setMemwalStatus('MemWal connection failed')
+          setMemwalHealth('No health response')
+        }
+
         const keys = await client.listMemoryKeys()
         setMemwalCount(keys.length)
-        setMemwalStatus('Connected to MemWal')
       } catch (err) {
         console.error(err)
         setError('Unable to reach MemWal endpoint. Check dashboard configuration and CORS settings.')
         setMemwalStatus('MemWal connection failed')
+        setMemwalHealth('No health response')
       } finally {
         setLoading(false)
       }
@@ -43,6 +56,10 @@ export default function AgentsPage() {
             <div>
               <p className="text-slate-400">MemWal status</p>
               <p className="mt-1 text-white">{memwalStatus}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">MemWal health</p>
+              <p className="mt-1 text-white">{memwalHealth ?? (loading ? 'Checking…' : 'Unknown')}</p>
             </div>
             <div>
               <p className="text-slate-400">Stored MemWal entries</p>

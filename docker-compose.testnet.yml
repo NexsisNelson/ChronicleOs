@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  memwal:
+    image: memwal/memwal:latest
+    ports:
+      - '8000:8000'
+    environment:
+      RUST_LOG: info
+    volumes:
+      - memwal_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dashboard:
+    build:
+      context: ./apps/dashboard
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_MEMWAL_API: http://memwal:8000
+      NEXT_PUBLIC_WALRUS_GATEWAY: https://walrus-testnet-gateway.sui.io
+      NEXT_PUBLIC_LOG_LEVEL: info
+      NEXT_PUBLIC_ENABLE_DEV_TOOLS: 'false'
+    depends_on:
+      memwal:
+        condition: service_healthy
+
+  agents:
+    build:
+      context: ./apps/agents
+      dockerfile: Dockerfile
+    environment:
+      WALRUS_ENDPOINT: https://walrus-testnet.sui.io
+      WALRUS_UPLOAD_PATH: /blobs
+      WALRUS_DOWNLOAD_PATH: /blobs/{cid}
+      WALRUS_METADATA_PATH: /blobs/{cid}/metadata
+      MEMWAL_ENDPOINT: http://memwal:8000
+      SESSION_ID: testnet_workflow
+      LOG_LEVEL: INFO
+      DEBUG: 'False'
+    depends_on:
+      memwal:
+        condition: service_healthy
+
+volumes:
+  memwal_data:
+  redis_data:

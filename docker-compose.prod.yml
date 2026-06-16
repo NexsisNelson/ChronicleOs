@@ -9,8 +9,16 @@ services:
       - '3000:3000'
     env_file:
       - apps/dashboard/.env.example
+    environment:
+      NEXT_PUBLIC_MEMWAL_API: http://memwal:8000
+      NEXT_PUBLIC_WALRUS_GATEWAY: http://walrus:8000
+      NEXT_PUBLIC_LOG_LEVEL: info
+      NEXT_PUBLIC_ENABLE_DEV_TOOLS: 'false'
     depends_on:
-      - memwal
+      memwal:
+        condition: service_healthy
+      walrus:
+        condition: service_healthy
 
   memwal:
     image: memwal/memwal:latest
@@ -20,6 +28,21 @@ services:
       RUST_LOG: info
     volumes:
       - memwal_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  walrus:
+    image: walrus/walrus:latest
+    ports:
+      - '8001:8000'
+    environment:
+      WALRUS_LISTEN_ADDR: 0.0.0.0:8000
+      LOG_LEVEL: info
+    volumes:
+      - walrus_data:/data
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
       interval: 30s
@@ -38,3 +61,4 @@ services:
 
 volumes:
   memwal_data:
+  walrus_data:
