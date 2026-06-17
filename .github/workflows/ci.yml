@@ -66,3 +66,14 @@ jobs:
       - name: Build dashboard
         working-directory: apps/dashboard
         run: npm run build
+
+  live-integration-sanity:
+    name: Live integration workflow file check
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check live integration workflow exists
+        run: test -f .github/workflows/live-integration.yml
+

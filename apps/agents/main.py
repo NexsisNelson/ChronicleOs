@@ -11,6 +11,12 @@ from src.agents.researcher import ResearcherAgent
 from src.agents.architect import ArchitectAgent
 from src.agents.auditor import AuditorAgent
 from src.models.types import ResearchTask, AgentWorkflow
+from src.workflow_checkpoint import (
+    WorkflowCheckpoint,
+    load_workflow_checkpoint,
+    restore_workflow_from_checkpoint,
+    save_workflow_checkpoint,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -24,6 +30,7 @@ async def run_workflow(
     task_description: str,
     session_id: Optional[str] = None,
     debug: bool = False,
+    fail_after_phase: Optional[str] = None,
 ) -> AgentWorkflow:
     """Run the complete agent workflow.
     
@@ -49,24 +56,96 @@ async def run_workflow(
         description=task_description,
         status="starting"
     )
+
+    recovered_from_checkpoint = False
+    checkpoint_stage = "fresh"
+    checkpoint = None
+    if session_id:
+        checkpoint = await load_workflow_checkpoint(session_id)
+        if checkpoint and checkpoint.task_description == task_description:
+            recovered_from_checkpoint = True
+            checkpoint_stage = checkpoint.checkpoint_stage
+
+    if checkpoint and checkpoint.task_description == task_description:
+        restored = restore_workflow_from_checkpoint(checkpoint)
+        research_result = restored.get("research")
+        architecture_result = restored.get("architecture")
+        audit_result = restored.get("audit")
+
+        if audit_result is not None:
+            logger.info("♻️ Resuming from a completed checkpoint for session %s", task.id)
+            return AgentWorkflow(
+                task_id=task.id,
+                research=research_result,
+                architecture=architecture_result,
+                audit=audit_result,
+                status="completed",
+                completed_at=restored.get("completed_at"),
+                recovered_from_checkpoint=True,
+                checkpoint_stage="complete",
+            )
+    else:
+        research_result = None
+        architecture_result = None
+        audit_result = None
     
     # Phase 1: Research
-    logger.info("📚 Phase 1: Research Agent starting...")
-    researcher = ResearcherAgent(config=config)
-    research_result = await researcher.research(task)
-    logger.info(f"✅ Research complete. Found {len(research_result.sources)} sources")
+    if research_result is None:
+        logger.info("📚 Phase 1: Research Agent starting...")
+        researcher = ResearcherAgent(config=config)
+        research_result = await researcher.research(task)
+        logger.info(f"✅ Research complete. Found {len(research_result.sources)} sources")
+        checkpoint_stage = "research"
+        if session_id:
+            await save_workflow_checkpoint(
+                WorkflowCheckpoint(
+                    task_id=task.id,
+                    task_description=task.description,
+                    checkpoint_stage=checkpoint_stage,
+                    research=research_result,
+                )
+            )
+        if fail_after_phase == "research":
+            raise RuntimeError("Simulated workflow crash after research phase")
     
     # Phase 2: Architecture
-    logger.info("🏗️  Phase 2: Architect Agent starting...")
-    architect = ArchitectAgent(config=config)
-    architecture_result = await architect.synthesize(research_result)
-    logger.info(f"✅ Architecture complete. Generated {len(architecture_result.artifacts)} artifacts")
+    if architecture_result is None:
+        logger.info("🏗️  Phase 2: Architect Agent starting...")
+        architect = ArchitectAgent(config=config)
+        architecture_result = await architect.synthesize(research_result)
+        logger.info(f"✅ Architecture complete. Generated {len(architecture_result.artifacts)} artifacts")
+        checkpoint_stage = "architecture"
+        if session_id:
+            await save_workflow_checkpoint(
+                WorkflowCheckpoint(
+                    task_id=task.id,
+                    task_description=task.description,
+                    checkpoint_stage=checkpoint_stage,
+                    research=research_result,
+                    architecture=architecture_result,
+                )
+            )
+        if fail_after_phase == "architecture":
+            raise RuntimeError("Simulated workflow crash after architecture phase")
     
     # Phase 3: Audit
-    logger.info("🔍 Phase 3: Auditor Agent starting...")
-    auditor = AuditorAgent(config=config)
-    audit_result = await auditor.review(architecture_result)
-    logger.info(f"✅ Audit complete. Quality score: {audit_result.quality_score:.1f}%")
+    if audit_result is None:
+        logger.info("🔍 Phase 3: Auditor Agent starting...")
+        auditor = AuditorAgent(config=config)
+        audit_result = await auditor.review(architecture_result)
+        logger.info(f"✅ Audit complete. Quality score: {audit_result.quality_score:.1f}%")
+        checkpoint_stage = "audit"
+        if session_id:
+            await save_workflow_checkpoint(
+                WorkflowCheckpoint(
+                    task_id=task.id,
+                    task_description=task.description,
+                    checkpoint_stage="complete",
+                    research=research_result,
+                    architecture=architecture_result,
+                    audit=audit_result,
+                )
+            )
     
     # Compile workflow
     workflow = AgentWorkflow(
@@ -74,7 +153,9 @@ async def run_workflow(
         research=research_result,
         architecture=architecture_result,
         audit=audit_result,
-        status="completed"
+        status="completed",
+        recovered_from_checkpoint=recovered_from_checkpoint,
+        checkpoint_stage="complete" if audit_result else checkpoint_stage,
     )
     
     logger.info("✨ ChronicleOS workflow completed successfully!")
@@ -103,6 +184,13 @@ def main():
         action="store_true",
         help="Enable debug logging"
     )
+    parser.add_argument(
+        "--fail-after-phase",
+        type=str,
+        choices=["research", "architecture"],
+        default=None,
+        help="Simulate a crash after a workflow phase for recovery testing"
+    )
     
     args = parser.parse_args()
     
@@ -112,6 +200,7 @@ def main():
             task_description=args.task,
             session_id=args.session_id,
             debug=args.debug,
+            fail_after_phase=args.fail_after_phase,
         )
     )
     

@@ -87,3 +87,5 @@ class AgentWorkflow:
     status: str = "in_progress"
     created_at: datetime = field(default_factory=datetime.now)
     completed_at: Optional[datetime] = None
+    recovered_from_checkpoint: bool = False
+    checkpoint_stage: str = "fresh"

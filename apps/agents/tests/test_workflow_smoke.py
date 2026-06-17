@@ -21,6 +21,25 @@ async def test_run_workflow_smoke(monkeypatch):
     async def fake_read(key):
         return memory_store.get(key, {})
 
+    async def fake_checkpoint_save(checkpoint):
+        memory_store[f"checkpoint:{checkpoint.task_id}"] = checkpoint.to_payload()
+        return "proof-checkpoint"
+
+    async def fake_checkpoint_load(session_id):
+        from src.workflow_checkpoint import WorkflowCheckpoint
+
+        payload = memory_store.get(f"checkpoint:{session_id}")
+        if not payload:
+            return None
+        return WorkflowCheckpoint(
+            task_id=payload["task_id"],
+            task_description=payload["task_description"],
+            checkpoint_stage=payload["checkpoint_stage"],
+            research=None,
+            architecture=None,
+            audit=None,
+        )
+
     monkeypatch.setattr(agent_main, "load_config", lambda: ChronicleConfig(walrus_endpoint="", memwal_endpoint=""))
     monkeypatch.setattr("src.agents.researcher.upload_to_walrus", fake_upload)
     monkeypatch.setattr("src.agents.researcher.save_to_memwal", fake_save)
@@ -28,6 +47,8 @@ async def test_run_workflow_smoke(monkeypatch):
     monkeypatch.setattr("src.agents.architect.save_to_memwal", fake_save)
     monkeypatch.setattr("src.agents.auditor.read_from_memwal", fake_read)
     monkeypatch.setattr("src.agents.auditor.save_to_memwal", fake_save)
+    monkeypatch.setattr(agent_main, "save_workflow_checkpoint", fake_checkpoint_save)
+    monkeypatch.setattr(agent_main, "load_workflow_checkpoint", fake_checkpoint_load)
 
     workflow = await agent_main.run_workflow("Map ChronicleOS live memory flow", session_id="smoke-1")
 

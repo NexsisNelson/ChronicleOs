@@ -1,0 +1,54 @@
+name: Live Integration
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+  schedule:
+    - cron: "0 3 * * 1"
+
+jobs:
+  live-tests:
+    name: Live integration (${{ github.event.inputs.environment || 'staging' }})
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+    env:
+      LIVE_TARGET: ${{ github.event.inputs.environment || 'staging' }}
+      CHRONICLE_LIVE_INTEGRATION: "1"
+      CHRONICLE_LIVE_MEMWAL_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_MEMWAL_ENDPOINT || secrets.STAGING_MEMWAL_ENDPOINT }}
+      CHRONICLE_LIVE_WALRUS_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_ENDPOINT || secrets.STAGING_WALRUS_ENDPOINT }}
+      CHRONICLE_LIVE_MEMWAL_API_KEY: ${{ github.event.inputs.environment == 'production' && secrets.PROD_MEMWAL_API_KEY || secrets.STAGING_MEMWAL_API_KEY }}
+      CHRONICLE_LIVE_WALRUS_PRIVATE_KEY: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_PRIVATE_KEY || secrets.STAGING_WALRUS_PRIVATE_KEY }}
+      CHRONICLE_LIVE_TIMEOUT_SECONDS: "240"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install agents dependencies
+        working-directory: apps/agents
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Validate live endpoints are configured
+        run: |
+          if [ -z "$CHRONICLE_LIVE_MEMWAL_ENDPOINT" ] || [ -z "$CHRONICLE_LIVE_WALRUS_ENDPOINT" ]; then
+            echo "Live integration endpoints are not configured for $LIVE_TARGET"
+            exit 1
+          fi
+
+      - name: Run live integration tests
+        working-directory: apps/agents
+        run: python -m pytest tests/integration/test_live_workflow.py -m live
