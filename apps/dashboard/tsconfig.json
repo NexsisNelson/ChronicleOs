@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     /* Bundler mode */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -31,6 +31,7 @@
       ]
     },
     "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "plugins": [
       {
@@ -41,11 +42,6 @@
   "include": [
     "src",
     ".next/types/**/*.ts"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
   ],
   "exclude": [
     "node_modules"

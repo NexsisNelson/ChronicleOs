@@ -29,7 +29,8 @@ Thank you for your interest in ChronicleOS! We welcome contributions across all 
 git clone https://github.com/chronicle-os/chronicle-os.git
 cd chronicle-os
 npm install
-pip install -e packages/memwal-adapter
+cd apps/agents && python -m pip install -r requirements-dev.txt
+cd ../../packages/memwal-adapter && python -m pip install -e .[dev]
 
 # Run all services
 npm run dev
@@ -49,11 +50,11 @@ cd apps/agents && python main.py --task "Your task"
 
 ```bash
 # Python
-cd apps/agents && pytest
-cd packages/memwal-adapter && pytest
+cd apps/agents && python -m pytest tests
+cd packages/memwal-adapter && python -m pytest tests
 
 # TypeScript
-npm --workspace=apps/dashboard run test
+npm --workspace=apps/dashboard run build
 ```
 
 ## Submitting Changes

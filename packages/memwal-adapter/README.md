@@ -66,7 +66,7 @@ workspace = SharedWorkspace(
 )
 
 # Researcher saves findings
-workspace.save_artifact(
+await workspace.save_artifact(
     agent="researcher",
     artifact_type="findings",
     data=research_data,
@@ -74,7 +74,7 @@ workspace.save_artifact(
 )
 
 # Architect reads findings
-findings = workspace.read_artifact(
+findings = await workspace.read_artifact(
     agent="researcher",
     artifact_type="findings"
 )
@@ -129,6 +129,17 @@ pytest
 black src/
 ruff check src/
 ```
+
+## Build and publish
+
+```bash
+python -m pip install build twine
+python -m build
+twine check dist/*
+twine upload dist/*
+```
+
+For a test PyPI upload, point `twine` at your test index instead of the public one.
 
 ## License
 

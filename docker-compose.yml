@@ -1,31 +1,114 @@
 version: '3.8'
 
 services:
-  # Phase 2: Local MemWal instance (placeholder)
+  # MemWal - Verifiable Agent Memory
   memwal:
     image: memwal/memwal:latest
+    container_name: chronicle-memwal
     ports:
       - "8000:8000"
     environment:
       RUST_LOG: info
+      MEMWAL_LISTEN_ADDR: 0.0.0.0:8000
     volumes:
       - memwal_data:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 3
+      start_period: 10s
+    networks:
+      - chronicle
 
-  # Phase 3: Optional - local Redis for caching
+  # Walrus - Decentralized Storage (local mock for testing)
+  # In production, set WALRUS_ENDPOINT to https://walrus-devnet.sui.io
+  walrus:
+    image: walrus/walrus:latest
+    container_name: chronicle-walrus
+    ports:
+      - "8001:8000"
+    environment:
+      WALRUS_LISTEN_ADDR: 0.0.0.0:8000
+      LOG_LEVEL: info
+    volumes:
+      - walrus_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - chronicle
+
+  # Redis - Optional caching for performance
   redis:
     image: redis:7-alpine
+    container_name: chronicle-redis
     ports:
       - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 3
+    networks:
+      - chronicle
+
+  # Dashboard - Next.js developer interface
+  dashboard:
+    build:
+      context: ./apps/dashboard
+      dockerfile: Dockerfile
+    container_name: chronicle-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_MEMWAL_API: http://memwal:8000
+      NEXT_PUBLIC_WALRUS_GATEWAY: http://walrus:8001
+      NEXT_PUBLIC_LOG_LEVEL: info
+    depends_on:
+      memwal:
+        condition: service_healthy
+      walrus:
+        condition: service_healthy
+    networks:
+      - chronicle
+
+  # Agent Runtime - Python async agents
+  agents:
+    build:
+      context: ./apps/agents
+      dockerfile: Dockerfile
+    container_name: chronicle-agents
+    environment:
+      MEMWAL_ENDPOINT: http://memwal:8000
+      WALRUS_ENDPOINT: http://walrus:8001
+      WALRUS_UPLOAD_PATH: /blobs
+      WALRUS_DOWNLOAD_PATH: /blobs/{cid}
+      WALRUS_METADATA_PATH: /blobs/{cid}/metadata
+      SESSION_ID: workflow_default
+    depends_on:
+      memwal:
+        condition: service_healthy
+      walrus:
+        condition: service_healthy
+    volumes:
+      - ./apps/agents/data:/app/data
+      - ./apps/agents/artifacts:/app/artifacts
+      - ./apps/agents/logs:/app/logs
+    networks:
+      - chronicle
 
 volumes:
   memwal_data:
+  walrus_data:
+  redis_data:
+
+networks:
+  chronicle:
+    driver: bridge

@@ -13,6 +13,18 @@ It includes production Docker images for the dashboard, a containerized agents r
 
 ## Local Production Build
 
+The quickest path is to use the helper scripts:
+
+```powershell
+powershell -File scripts/deploy-prod.ps1
+```
+
+```bash
+./scripts/deploy-prod.sh
+```
+
+If you want to run the commands manually, use the steps below.
+
 ### 1. Build Docker images
 
 ```bash
@@ -80,6 +92,20 @@ docker-compose -f docker-compose.prod.yml up --build
 
 > If you run the agents container from a different Docker network, replace `host.docker.internal` with the proper MemWal host or service name.
 
+## Example workflow demo
+
+To see live memory writes and dashboard updates end-to-end, start the shared stack and then run the example workflow script:
+
+```powershell
+powershell -File scripts/run-example-workflow.ps1
+```
+
+```bash
+./scripts/run-example-workflow.sh
+```
+
+The workflow writes `research:*`, `architect:*`, and `audit:*` entries to MemWal and publishes artifacts to Walrus so the dashboard pages can show the fresh data immediately.
+
 ## Environment configuration
 
 ### Dashboard
@@ -105,6 +131,7 @@ This repository includes `.dockerignore` files at the root and inside each app t
 - The dashboard is production-ready using `next build` and `next start`.
 - The agents container is configured as a CLI runtime; it can be invoked with `--task` to run workflows.
 - The `packages/memwal-adapter` package now includes valid packaging metadata for editable installs and container builds.
+- The helper scripts in `scripts/` will create local `.env` files from the templates if they do not already exist.
 
 ## Optional local services
 

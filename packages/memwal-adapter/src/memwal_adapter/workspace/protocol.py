@@ -18,6 +18,7 @@ class WorkspaceArtifact:
     walrus_cid: str
     timestamp: str
     metadata: Dict[str, Any]
+    data: Any = None
 
 
 class SharedWorkspace:
@@ -69,6 +70,7 @@ class SharedWorkspace:
             walrus_cid=cid,
             timestamp=datetime.utcnow().isoformat(),
             metadata=metadata or {},
+            data=data,
         )
 
         await self.client.save_memory(
@@ -96,8 +98,8 @@ class SharedWorkspace:
             f"{self.workspace_key}:artifact:{artifact_name}"
         )
 
-        if data:
-            return WorkspaceArtifact(**data)
+        if data and isinstance(data.get("data"), dict):
+            return WorkspaceArtifact(**data["data"])
         return None
 
     async def list_artifacts(self) -> List[WorkspaceArtifact]:
@@ -109,7 +111,7 @@ class SharedWorkspace:
         artifacts = []
         for key in keys:
             data = await self.client.read_memory(key)
-            if data:
-                artifacts.append(WorkspaceArtifact(**data))
+            if data and isinstance(data.get("data"), dict):
+                artifacts.append(WorkspaceArtifact(**data["data"]))
 
         return artifacts

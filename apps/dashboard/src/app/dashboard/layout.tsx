@@ -17,14 +17,6 @@ export default function DashboardLayout({
           <NavLink href="/dashboard/agents" label="Agent Monitor" />
           <NavLink href="/dashboard/history" label="Execution History" />
         </nav>
-
-        <hr className="my-8 border-slate-700" />
-
-        <h2 className="text-sm font-semibold text-slate-300 mb-4">SESSIONS</h2>
-        <div className="space-y-1 text-sm text-slate-400">
-          <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">Session 1</div>
-          <div className="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer">Session 2</div>
-        </div>
       </aside>
 
       {/* Main Content */}

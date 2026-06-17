@@ -178,6 +178,9 @@ NEXT_PUBLIC_MEMWAL_API=http://localhost:3001
 - [Walrus Integration Guide](./docs/WALRUS_INTEGRATION.md)
 - [MemWal API Reference](./docs/MEMWAL_API.md)
 - [Dashboard Components](./docs/DASHBOARD.md)
+- [Developer Setup](./docs/DEVELOPER_SETUP.md)
+- [Example Workflows](./docs/EXAMPLE_WORKFLOWS.md)
+- [Deployment Guide](./DEPLOYMENT.md)
 
 ## 🤝 Contributing
 
