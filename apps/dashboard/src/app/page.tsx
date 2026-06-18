@@ -13,10 +13,6 @@ export default function Home() {
             </div>
             <h1 className="text-xl font-bold text-white">ChronicleOS</h1>
           </div>
-          <div className="flex gap-4">
-            <Link href="/docs" className="text-slate-300 hover:text-white transition">Docs</Link>
-            <Link href="/api" className="text-slate-300 hover:text-white transition">API</Link>
-          </div>
         </div>
       </nav>
 

@@ -39,8 +39,7 @@ src/
 │   ├── __init__.py
 │   ├── walrus_tools.py   # Walrus storage integration
 │   ├── memwal_tools.py   # MemWal memory integration
-│   ├── search_tools.py   # Web search and data gathering
-│   └── validation_tools.py
+│   └── search_tools.py   # Web search and data gathering
 ├── models/
 │   ├── __init__.py
 │   └── types.py          # Shared data structures
@@ -51,6 +50,10 @@ src/
 ## Environment Variables
 
 See `.env.example` for required settings.
+
+## Using the Project
+
+For a start-to-finish guide that covers setup, running the dashboard, running the agents, and testing, see [usersLearn.md](../../usersLearn.md).
 
 ## Development
 

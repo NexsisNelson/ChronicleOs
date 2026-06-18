@@ -46,45 +46,49 @@ export default function AgentsPage() {
   }, [])
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-white mb-6">Agent Monitor</h1>
+    <div className="space-y-8">
+      <section className="surface rounded-[28px] p-6 sm:p-8">
+        <p className="text-xs uppercase tracking-[0.28em] text-violet-300/80">Agent Monitor</p>
+        <h1 className="mt-3 text-4xl font-semibold text-white">See the live state of ChronicleOS agents and services.</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
+          This page summarizes the integration health for MemWal, the active persistence layer behind agent state and workflow metadata.
+        </p>
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-[1.3fr,0.9fr]">
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6">
+        <div className="surface rounded-[28px] p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-white mb-3">Phase 2 Integration Status</h2>
-          <p className="text-slate-400 mb-4">The dashboard is now wired to MemWal memory persistence for agent workflows.</p>
-          <div className="space-y-4 text-sm text-slate-200">
-            <div>
-              <p className="text-slate-400">MemWal status</p>
-              <p className="mt-1 text-white">{memwalStatus}</p>
-            </div>
-            <div>
-              <p className="text-slate-400">MemWal health</p>
-              <p className="mt-1 text-white">{memwalHealth ?? (loading ? 'Checking…' : 'Unknown')}</p>
-            </div>
-            <div>
-              <p className="text-slate-400">Stored MemWal entries</p>
-              <p className="mt-1 text-white">{loading ? 'Loading…' : memwalCount !== null ? memwalCount : 'Unknown'}</p>
-            </div>
-            <div>
-              <p className="text-slate-400">Walrus gateway</p>
-              <p className="mt-1 text-white">{process.env.NEXT_PUBLIC_WALRUS_GATEWAY || 'Not configured'}</p>
-            </div>
+          <p className="mb-6 text-sm leading-6 text-slate-400">The dashboard is wired to MemWal memory persistence for agent workflows.</p>
+          <div className="grid gap-4 text-sm text-slate-200 md:grid-cols-2">
+            <InfoBlock label="MemWal status" value={memwalStatus} />
+            <InfoBlock label="MemWal health" value={memwalHealth ?? (loading ? 'Checking…' : 'Unknown')} />
+            <InfoBlock label="Stored MemWal entries" value={loading ? 'Loading…' : memwalCount !== null ? String(memwalCount) : 'Unknown'} />
+            <InfoBlock label="Walrus gateway" value={process.env.NEXT_PUBLIC_WALRUS_GATEWAY || 'Not configured'} />
           </div>
           {error && (
-            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+            <div className="mt-6 rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">
               {error}
             </div>
           )}
         </div>
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6">
+        <div className="surface rounded-[28px] p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-white mb-3">What Phase 2 delivers</h2>
-          <ul className="list-disc pl-5 space-y-2 text-slate-200 text-sm">
-            <li>MemWal memory persistence for agent state</li>
-            <li>Walrus artifact storage with CID references</li>
-            <li>Shared workflow metadata across Researcher / Architect / Auditor</li>
+          <ul className="space-y-3 text-sm leading-6 text-slate-300">
+            <li className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">MemWal memory persistence for agent state</li>
+            <li className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Walrus artifact storage with CID references</li>
+            <li className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Shared workflow metadata across Researcher, Architect, and Auditor</li>
           </ul>
         </div>
       </div>
+    </div>
+  )
+}
+
+function InfoBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
+      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{label}</p>
+      <p className="mt-3 text-sm leading-6 text-white break-words">{value}</p>
     </div>
   )
 }

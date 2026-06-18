@@ -34,23 +34,29 @@ export default function ArtifactsPage() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-white mb-6">Artifact Explorer</h1>
+    <div className="space-y-8">
+      <section className="surface rounded-[28px] p-6 sm:p-8">
+        <p className="text-xs uppercase tracking-[0.28em] text-cyan-300/80">Artifact Explorer</p>
+        <h1 className="mt-3 text-4xl font-semibold text-white">Trace Walrus artifacts from CID to content.</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
+          Use this page to inspect stored files, verify metadata, and preview the text payload behind a Walrus content identifier.
+        </p>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr,2fr]">
+      <div className="grid gap-6 xl:grid-cols-[0.9fr,1.1fr]">
         <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6">
+          <div className="surface rounded-[28px] p-6">
             <h2 className="text-xl font-semibold text-white mb-3">Inspect a Walrus CID</h2>
-            <label className="block text-sm text-slate-300 mb-2">CID</label>
+            <label className="block text-xs uppercase tracking-[0.24em] text-slate-500 mb-2">CID</label>
             <input
-              className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-blue-500"
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
               value={cid}
               onChange={(event) => setCid(event.target.value.trim())}
               placeholder="e.g. z1A2B3C4D5E6F7G8H9I0"
             />
             <button
               type="button"
-              className="mt-4 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500"
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
               onClick={fetchArtifact}
             >
               Load Artifact
@@ -58,22 +64,22 @@ export default function ArtifactsPage() {
           </div>
 
           {error && (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+            <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">
               {error}
             </div>
           )}
 
           {metadata && (
-            <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6 space-y-2">
+            <div className="surface rounded-[28px] p-6 space-y-2">
               <h3 className="text-lg font-semibold text-white">Artifact Metadata</h3>
-              <pre className="whitespace-pre-wrap break-words text-sm text-slate-200">{JSON.stringify(metadata, null, 2)}</pre>
+              <pre className="whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-200">{JSON.stringify(metadata, null, 2)}</pre>
             </div>
           )}
         </div>
 
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6">
+        <div className="surface rounded-[28px] p-6">
           <h2 className="text-xl font-semibold text-white mb-3">Artifact Preview</h2>
-          <div className="min-h-[320px] rounded-2xl border border-slate-800 bg-slate-950/50 p-4 text-sm text-slate-200">
+          <div className="min-h-[360px] rounded-3xl border border-white/10 bg-slate-950/50 p-4 text-sm text-slate-200">
             {content ? (
               <pre className="whitespace-pre-wrap break-words">{content}</pre>
             ) : (

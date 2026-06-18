@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Activity, ArrowRight, Database, Layers3, ShieldCheck, Sparkles } from 'lucide-react'
 import { MemWalClient } from '@/lib/api/memwal-client'
 import { WalrusClient } from '@/lib/api/walrus-client'
 
@@ -53,49 +54,139 @@ export default function DashboardHome() {
   }, [])
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-        <p className="text-slate-400">Monitor your multi-agent workflows in real-time</p>
-      </div>
+    <div className="space-y-8">
+      <section className="surface rounded-[28px] p-6 sm:p-8 lg:p-10">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr,0.8fr] lg:items-end">
+          <div className="space-y-5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-teal-200">
+              <Sparkles className="h-3.5 w-3.5" /> Live control surface
+            </div>
+            <div className="space-y-3">
+              <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                See the agent system as a live operational command center.
+              </h1>
+              <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+                ChronicleOS connects MemWal and Walrus so you can inspect workflows, artifacts, and memory state as they change.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Focus</p>
+                <p className="mt-1 text-sm text-white">Memory, artifacts, and execution history</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Scope</p>
+                <p className="mt-1 text-sm text-white">Researcher, Architect, Auditor</p>
+              </div>
+            </div>
+          </div>
 
-      <div className="grid gap-6 mb-8 lg:grid-cols-[1.1fr,0.9fr]">
-        <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Platform Health</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <StatusCard label="MemWal" status={memwalStatus} loading={statusLoading} />
-            <StatusCard label="Walrus" status={walrusStatus} loading={statusLoading} />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <MetricCard icon={Activity} label="System health" value={statusLoading ? 'Checking…' : 'Live'} detail="MemWal and Walrus endpoints" />
+            <MetricCard icon={Database} label="Storage layer" value="2 services" detail="Verifiable memory + artifact storage" />
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
+        <div className="surface rounded-[28px] p-6 sm:p-8">
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-teal-300/80">Platform Health</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">Connected services</h2>
+            </div>
+            <ShieldCheck className="h-6 w-6 text-teal-300" />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <StatusCard label="MemWal" status={memwalStatus} loading={statusLoading} tone="teal" />
+            <StatusCard label="Walrus" status={walrusStatus} loading={statusLoading} tone="blue" />
           </div>
         </div>
 
-        <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Live Data</h2>
-          <div className="space-y-3 text-sm text-slate-300">
+        <div className="surface rounded-[28px] p-6 sm:p-8">
+          <div className="mb-5 flex items-center gap-3">
+            <Layers3 className="h-6 w-6 text-cyan-300" />
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Live Data</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">What to do next</h2>
+            </div>
+          </div>
+          <div className="space-y-4 text-sm leading-6 text-slate-300">
             <p>
-              The dashboard is connected to live MemWal and Walrus endpoints, so this view stays empty until agents write real memory and artifact records.
+              Start the agent workflow, then inspect Memory, Artifact, and History to see real persisted records appear.
             </p>
             <p>
-              Run the agent workflow, then open the Memory, Artifact, or History pages to inspect persisted entries.
+              The dashboard shows live endpoint state only. It does not invent sessions or metrics when no workflow has run.
             </p>
           </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <QuickLink href="/dashboard/memory" label="Open memory" />
+            <QuickLink href="/dashboard/artifacts" label="Browse artifacts" />
+            <QuickLink href="/dashboard/history" label="View history" />
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Operational Notes</h2>
-        <p className="text-slate-400 text-sm">
-          No fabricated session metrics are shown here. Health checks reflect the configured services only.
+      <section className="surface rounded-[28px] p-6 sm:p-8">
+        <div className="mb-6 flex items-center gap-3">
+          <ArrowRight className="h-5 w-5 text-teal-300" />
+          <h2 className="text-2xl font-semibold text-white">Operational notes</h2>
+        </div>
+        <p className="max-w-3xl text-sm leading-6 text-slate-400">
+          ChronicleOS is optimized for inspection rather than synthetic demos. Once the agent workflow runs, the dashboard becomes the place to verify memory, review artifacts, and follow execution state across sessions.
         </p>
-      </div>
+      </section>
     </div>
   )
 }
 
-function StatusCard({ label, status, loading }: { label: string; status: string; loading: boolean }) {
+function MetricCard({
+  icon: Icon,
+  label,
+  value,
+  detail,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  value: string
+  detail: string
+}) {
   return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-950/70 p-4">
-      <p className="text-slate-400 text-sm mb-2">{label}</p>
-      <p className="text-white text-sm">{loading ? 'Checking status…' : status}</p>
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{label}</p>
+          <p className="mt-3 text-2xl font-semibold text-white">{value}</p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-3 text-teal-300">
+          <Icon className="h-5 w-5" />
+        </div>
+      </div>
+      <p className="mt-4 text-sm leading-6 text-slate-400">{detail}</p>
     </div>
+  )
+}
+
+function StatusCard({ label, status, loading, tone }: { label: string; status: string; loading: boolean; tone: 'teal' | 'blue' }) {
+  const accent = tone === 'teal' ? 'text-teal-300' : 'text-sky-300'
+  const border = tone === 'teal' ? 'border-teal-400/20' : 'border-sky-400/20'
+  const bg = tone === 'teal' ? 'bg-teal-400/10' : 'bg-sky-400/10'
+
+  return (
+    <div className={`rounded-3xl border ${border} ${bg} p-5`}>
+      <p className={`text-xs uppercase tracking-[0.24em] ${accent}`}>{label}</p>
+      <p className="mt-3 text-sm leading-6 text-white">{loading ? 'Checking status…' : status}</p>
+    </div>
+  )
+}
+
+function QuickLink({ href, label }: { href: string; label: string }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-teal-400/30 hover:bg-teal-400/10 hover:text-white"
+    >
+      {label}
+    </a>
   )
 }

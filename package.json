@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Decentralized multi-agent R&D lab with Walrus + MemWal + Developer Dashboard",
   "private": true,
+  "packageManager": "npm@8.19.4",
   "workspaces": [
     "apps/*",
     "packages/*"

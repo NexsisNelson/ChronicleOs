@@ -2,6 +2,8 @@
 
 A production-ready framework for autonomous agents collaborating on long-running technical tasks, powered by **Walrus** (decentralized storage), **MemWal** (verifiable agent memory), and a **Next.js developer dashboard** for real-time introspection.
 
+For the full end-to-end usage guide, start with [usersLearn.md](./usersLearn.md).
+
 ```
                   [ Walrus / MemWal Storage Layer ]
                      /           |            \
@@ -174,13 +176,11 @@ NEXT_PUBLIC_MEMWAL_API=http://localhost:3001
 
 ## 📚 Documentation
 
-- [Agent Architecture](./docs/AGENT_ARCHITECTURE.md)
-- [Walrus Integration Guide](./docs/WALRUS_INTEGRATION.md)
-- [MemWal API Reference](./docs/MEMWAL_API.md)
-- [Dashboard Components](./docs/DASHBOARD.md)
+- [Users Guide](./usersLearn.md)
 - [Developer Setup](./docs/DEVELOPER_SETUP.md)
 - [Example Workflows](./docs/EXAMPLE_WORKFLOWS.md)
 - [Deployment Guide](./DEPLOYMENT.md)
+- [Contributing](./CONTRIBUTING.md)
 
 ## 🤝 Contributing
 

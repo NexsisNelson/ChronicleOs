@@ -52,16 +52,22 @@ export default function HistoryPage() {
   }, [])
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-white mb-6">Execution History</h1>
+    <div className="space-y-8">
+      <section className="surface rounded-[28px] p-6 sm:p-8">
+        <p className="text-xs uppercase tracking-[0.28em] text-amber-300/80">Execution History</p>
+        <h1 className="mt-3 text-4xl font-semibold text-white">Review persisted MemWal entries in chronological order.</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
+          This view surfaces the memory history produced by the agent workflow so you can inspect what changed, when it changed, and which agent wrote it.
+        </p>
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6">
+        <div className="surface rounded-[28px] p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-white mb-4">Recent MemWal Entries</h2>
           {loading ? (
             <p className="text-slate-400">Loading history…</p>
           ) : error ? (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+            <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">
               {error}
             </div>
           ) : entries.length === 0 ? (
@@ -69,22 +75,22 @@ export default function HistoryPage() {
           ) : (
             <ul className="space-y-4">
               {entries.map((entry) => (
-                <li key={entry.key ?? Math.random()} className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm text-slate-400">Key</p>
-                      <p className="text-white break-all">{entry.key}</p>
+                <li key={entry.key ?? Math.random()} className="rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Key</p>
+                      <p className="mt-2 break-all text-white">{entry.key}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-slate-400">Timestamp</p>
-                      <p className="text-white">{entry.timestamp ?? 'unknown'}</p>
+                    <div className="sm:text-right">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Timestamp</p>
+                      <p className="mt-2 text-white">{entry.timestamp ?? 'unknown'}</p>
                     </div>
                   </div>
                   {entry.agent && (
-                    <p className="mt-3 text-sm text-slate-200">Agent: {entry.agent}</p>
+                    <p className="mt-3 text-sm text-slate-300">Agent: {entry.agent}</p>
                   )}
                   {entry.data && (
-                    <pre className="mt-3 max-h-44 overflow-auto rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-xs text-slate-200">
+                    <pre className="mt-3 max-h-44 overflow-auto rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs text-slate-200">
                       {JSON.stringify(entry.data, null, 2)}
                     </pre>
                   )}
@@ -94,16 +100,16 @@ export default function HistoryPage() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-6">
+        <div className="surface rounded-[28px] p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-white mb-3">Phase 2 Timeline</h2>
-          <p className="text-slate-400 text-sm mb-4">
+          <p className="text-sm leading-6 text-slate-400 mb-4">
             This page shows the MemWal-backed workflow entries that capture agent decisions and persisted state.
           </p>
           <div className="space-y-3 text-sm text-slate-200">
-            <p>
-              A connected MemWal instance allows the Researcher, Architect, and Auditor agents to share verified memory and artifact metadata across runs.
+            <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              A connected MemWal instance lets the Researcher, Architect, and Auditor share verified memory across runs.
             </p>
-            <p>
+            <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
               If no entries appear, run the agent workflow and refresh this page to see the persisted memory entries.
             </p>
           </div>
