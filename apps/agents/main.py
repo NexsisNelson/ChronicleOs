@@ -1,11 +1,13 @@
 """Main entry point for ChronicleOS multi-agent system."""
 
-import asyncio
 import argparse
+import asyncio
+import json
 import logging
 from pathlib import Path
-from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
+from urllib.error import URLError
+from urllib.request import urlopen
 
 from src.config import load_config, set_config
 from src.agents.researcher import ResearcherAgent
@@ -13,6 +15,7 @@ from src.agents.architect import ArchitectAgent
 from src.agents.auditor import AuditorAgent
 from src.models.types import ResearchTask, AgentWorkflow
 from src.tools.memwal_tools import list_memwal_keys
+from src.tools.walrus_tools import list_walrus_objects
 from src.workflow_checkpoint import (
     WorkflowCheckpoint,
     load_workflow_checkpoint,
@@ -28,6 +31,28 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 DEFAULT_DEMO_TASK = "Produce a ChronicleOS local demo run with seeded memory and artifacts"
+ROOT_DIR = Path(__file__).resolve().parents[2]
+LOCAL_DEMO_BUNDLE_PATH = ROOT_DIR / 'config' / 'local-demo.sample.json'
+
+
+def _load_local_demo_bundle() -> Dict[str, Any]:
+    try:
+        return json.loads(LOCAL_DEMO_BUNDLE_PATH.read_text(encoding='utf-8'))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {
+            'demo': {
+                'sessionId': 'demo-1',
+                'task': DEFAULT_DEMO_TASK,
+            }
+        }
+
+
+def _probe_url(url: str) -> bool:
+    try:
+        with urlopen(url, timeout=2):
+            return True
+    except URLError:
+        return False
 
 
 def _read_task_file(task_file: Optional[str]) -> Optional[str]:
@@ -69,6 +94,77 @@ async def list_sessions() -> None:
     for session_id in sessions:
         checkpoint = await load_workflow_checkpoint(session_id)
         _print_session_summary(session_id, checkpoint)
+
+
+async def collect_status_report(local_demo: bool = False) -> Dict[str, Any]:
+    config = load_config()
+    if local_demo:
+        config.walrus_endpoint = ""
+        config.memwal_endpoint = ""
+        set_config(config)
+
+    bundle = _load_local_demo_bundle()
+    demo_session_id = bundle.get('demo', {}).get('sessionId', 'demo-1')
+    demo_task = bundle.get('demo', {}).get('task', DEFAULT_DEMO_TASK)
+
+    memwal_keys = await list_memwal_keys()
+    walrus_objects = await list_walrus_objects()
+    dashboard_health = _probe_url("http://localhost:3000/api/health")
+    local_demo_health = _probe_url("http://localhost:3000/api/local-demo/health")
+
+    demo_keys = [key for key in memwal_keys if key.startswith(("research:", "architect:", "audit:", "workflow:"))]
+    seeded_demo = any(key.startswith(f"research:{demo_session_id}") for key in memwal_keys)
+
+    return {
+        "dashboard_running": dashboard_health or local_demo_health,
+        "dashboard_health": dashboard_health,
+        "local_demo_health": local_demo_health,
+        "memwal_mode": "local-demo" if not config.memwal_endpoint else "remote",
+        "walrus_mode": "local-demo" if not config.walrus_endpoint else "remote",
+        "seeded_demo": seeded_demo,
+        "demo_session_id": demo_session_id,
+        "demo_task": demo_task,
+        "memwal_key_count": len(memwal_keys),
+        "demo_key_count": len(demo_keys),
+        "walrus_object_count": len(walrus_objects),
+        "seeded_memory_keys": demo_keys,
+        "seeded_artifacts": walrus_objects,
+        "session_ids": [
+            ":".join(key.split(":")[1:-1])
+            for key in memwal_keys
+            if key.startswith("workflow:") and key.endswith(":checkpoint")
+        ],
+    }
+
+
+def format_status_report(report: Dict[str, Any]) -> str:
+    lines = [
+        "ChronicleOS status",
+        f"- Dashboard: {'running' if report['dashboard_running'] else 'not running'}",
+        f"- Dashboard health endpoint: {'reachable' if report['dashboard_health'] else 'not reachable'}",
+        f"- Local demo health endpoint: {'reachable' if report['local_demo_health'] else 'not reachable'}",
+        f"- MemWal mode: {report['memwal_mode']}",
+        f"- Walrus mode: {report['walrus_mode']}",
+        f"- Seeded demo data: {'yes' if report['seeded_demo'] else 'no'} ({report['demo_key_count']} demo keys, {report['walrus_object_count']} artifacts)",
+        f"- Demo session: {report['demo_session_id']}",
+        f"- Demo task: {report['demo_task']}",
+        f"- Seeded memory keys: {', '.join(report['seeded_memory_keys']) if report['seeded_memory_keys'] else 'none'}",
+        f"- Seeded artifacts: {', '.join(report['seeded_artifacts']) if report['seeded_artifacts'] else 'none'}",
+        f"- Known sessions: {', '.join(report['session_ids']) if report['session_ids'] else 'none yet'}",
+    ]
+    return "\n".join(lines)
+
+
+def format_ready_report(report: Dict[str, Any]) -> str:
+    lines = [
+        "ChronicleOS readiness",
+        f"- Dashboard: {'running' if report['dashboard_running'] else 'not running'}",
+        f"- Local demo: {'ready' if report['seeded_demo'] and report['local_demo_health'] else 'not ready'}",
+        f"- Seeded demo session: {report['demo_session_id']}",
+        f"- Seeded demo memory: {len(report['seeded_memory_keys'])} keys",
+        f"- Seeded demo artifacts: {len(report['seeded_artifacts'])} objects",
+    ]
+    return "\n".join(lines)
 
 
 async def run_workflow(
@@ -235,6 +331,16 @@ def main():
         help="List saved workflow sessions and exit"
     )
     parser.add_argument(
+        "--ready",
+        action="store_true",
+        help="Print a concise readiness summary for the dashboard, agent, and seeded demo"
+    )
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="Print service and local demo readiness summary and exit"
+    )
+    parser.add_argument(
         "--resume",
         type=str,
         default=None,
@@ -280,6 +386,16 @@ def main():
 
     if args.list_sessions:
         asyncio.run(list_sessions())
+        return
+
+    if args.ready:
+        status_report = asyncio.run(collect_status_report(local_demo=args.local_demo))
+        print(format_ready_report(status_report))
+        return
+
+    if args.status:
+        status_report = asyncio.run(collect_status_report(local_demo=args.local_demo))
+        print(format_status_report(status_report))
         return
 
     task_description = args.task

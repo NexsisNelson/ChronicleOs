@@ -6,7 +6,7 @@ This guide shows how to prepare ChronicleOS on Windows, macOS, and Linux. For th
 
 - Python 3.10 or newer
 - Node.js 20 or newer
-- npm 10 or newer
+- npm 8.19.4 or newer
 - Git
 - Docker and Docker Compose if you want the containerized stack
 

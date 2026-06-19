@@ -17,7 +17,7 @@ For the shortest path, start with [docs/START_HERE.md](./docs/START_HERE.md). Fo
 ### Prerequisites
 - **Node.js** ≥ 20.0.0 (for dashboard)
 - **Python** ≥ 3.10 (for agents)
-- **npm** ≥ 10.0.0
+- **npm** ≥ 8.19.4
 - Walrus devnet tokens (for storage gas fees)
 - LLM API key (OpenAI, Anthropic, or Deepseek)
 
@@ -28,6 +28,14 @@ npm run bootstrap
 ```
 
 That one command prepares env files, installs dependencies, and seeds the offline demo store.
+
+Then run the one-command readiness check:
+
+```bash
+npm run ready
+```
+
+It confirms the dashboard, agent CLI, and seeded demo bundle are all ready together.
 
 ### Development
 

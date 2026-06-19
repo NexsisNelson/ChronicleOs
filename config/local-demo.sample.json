@@ -1,0 +1,31 @@
+{
+  "preflight": {
+    "nodeMajor": 20,
+    "npmMajor": 8,
+    "npmMinor": 19,
+    "pythonMajor": 3,
+    "pythonMinor": 10
+  },
+  "bootstrap": {
+    "agentEnv": {
+      "WALRUS_ENDPOINT": "",
+      "MEMWAL_ENDPOINT": "",
+      "WALRUS_PRIVATE_KEY": "",
+      "MEMWAL_API_KEY": "",
+      "OPENAI_API_KEY": "",
+      "ANTHROPIC_API_KEY": "",
+      "DEEPSEEK_API_KEY": "",
+      "LOG_LEVEL": "INFO",
+      "LOCAL_DEMO": "1"
+    },
+    "dashboardEnv": {
+      "NEXT_PUBLIC_WALRUS_GATEWAY": "http://localhost:3000/api/local-demo",
+      "NEXT_PUBLIC_MEMWAL_API": "http://localhost:3000/api/local-demo",
+      "NEXT_PUBLIC_LOCAL_DEMO": "1"
+    }
+  },
+  "demo": {
+    "sessionId": "demo-1",
+    "task": "Produce a ChronicleOS local demo run with seeded memory and artifacts"
+  }
+}

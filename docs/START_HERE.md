@@ -15,6 +15,14 @@ npm run bootstrap
 
 That command creates the local env files, installs dependencies, and prepares the offline demo store.
 
+After bootstrap, run:
+
+```bash
+npm run ready
+```
+
+That single check confirms the dashboard health route, the agent readiness summary, and the seeded demo bundle are aligned.
+
 ## Daily Workflow
 
 ```bash
@@ -58,6 +66,8 @@ npm run reset:local
 ```
 
 Then rerun the local demo workflow. The dashboard will show seeded memory keys and artifacts even before a real workflow writes data.
+
+For the first successful run, you only need bootstrap, ready, dashboard, and local demo. Skip custom tasks until after you see the seeded data.
 
 ## Troubleshooting
 
