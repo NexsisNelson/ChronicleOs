@@ -4,13 +4,15 @@ import asyncio
 import argparse
 import logging
 from pathlib import Path
+from pathlib import Path
 from typing import Optional
 
-from src.config import load_config
+from src.config import load_config, set_config
 from src.agents.researcher import ResearcherAgent
 from src.agents.architect import ArchitectAgent
 from src.agents.auditor import AuditorAgent
 from src.models.types import ResearchTask, AgentWorkflow
+from src.tools.memwal_tools import list_memwal_keys
 from src.workflow_checkpoint import (
     WorkflowCheckpoint,
     load_workflow_checkpoint,
@@ -25,12 +27,56 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+DEFAULT_DEMO_TASK = "Produce a ChronicleOS local demo run with seeded memory and artifacts"
+
+
+def _read_task_file(task_file: Optional[str]) -> Optional[str]:
+    if not task_file:
+        return None
+
+    path = Path(task_file)
+    if not path.exists():
+        raise FileNotFoundError(f"Task file not found: {task_file}")
+
+    task_text = path.read_text(encoding="utf-8").strip()
+    if not task_text:
+        raise ValueError(f"Task file is empty: {task_file}")
+    return task_text
+
+
+def _print_session_summary(session_id: str, checkpoint) -> None:
+    stage = checkpoint.checkpoint_stage if checkpoint else "unknown"
+    description = checkpoint.task_description if checkpoint else "(no description)"
+    print(f"- {session_id} [{stage}] {description}")
+
+
+async def list_sessions() -> None:
+    keys = await list_memwal_keys(prefix="workflow:")
+    sessions = []
+
+    for key in keys:
+        parts = key.split(":")
+        if len(parts) >= 3 and parts[-1] == "checkpoint":
+            session_id = ":".join(parts[1:-1])
+            if session_id not in sessions:
+                sessions.append(session_id)
+
+    if not sessions:
+        print("No workflow sessions found yet. Run a workflow or use --local-demo to seed sample data.")
+        return
+
+    print("Workflow sessions:")
+    for session_id in sessions:
+        checkpoint = await load_workflow_checkpoint(session_id)
+        _print_session_summary(session_id, checkpoint)
+
 
 async def run_workflow(
-    task_description: str,
+    task_description: Optional[str] = None,
     session_id: Optional[str] = None,
     debug: bool = False,
     fail_after_phase: Optional[str] = None,
+    local_demo: bool = False,
 ) -> AgentWorkflow:
     """Run the complete agent workflow.
     
@@ -44,6 +90,22 @@ async def run_workflow(
     """
     
     config = load_config()
+
+    if local_demo:
+        config.walrus_endpoint = ""
+        config.memwal_endpoint = ""
+        set_config(config)
+
+    if not task_description and session_id:
+        checkpoint = await load_workflow_checkpoint(session_id)
+        if checkpoint and checkpoint.task_description:
+            task_description = checkpoint.task_description
+
+    if not task_description:
+        task_description = DEFAULT_DEMO_TASK if local_demo else None
+
+    if not task_description:
+        raise ValueError("A task description is required. Use --task, --task-file, or --local-demo.")
     
     if debug:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -168,16 +230,38 @@ def main():
         description="ChronicleOS - Multi-Agent Research Lab"
     )
     parser.add_argument(
+        "--list-sessions",
+        action="store_true",
+        help="List saved workflow sessions and exit"
+    )
+    parser.add_argument(
+        "--resume",
+        type=str,
+        default=None,
+        help="Resume a workflow from an existing session id"
+    )
+    parser.add_argument(
         "--task",
         type=str,
-        required=True,
+        default=None,
         help="Research task description"
+    )
+    parser.add_argument(
+        "--task-file",
+        type=str,
+        default=None,
+        help="Path to a text file containing the task description"
     )
     parser.add_argument(
         "--session-id",
         type=str,
         default=None,
         help="Session identifier for tracking"
+    )
+    parser.add_argument(
+        "--local-demo",
+        action="store_true",
+        help="Run the workflow in offline local demo mode"
     )
     parser.add_argument(
         "--debug",
@@ -193,14 +277,32 @@ def main():
     )
     
     args = parser.parse_args()
+
+    if args.list_sessions:
+        asyncio.run(list_sessions())
+        return
+
+    task_description = args.task
+    if not task_description:
+        try:
+            task_description = _read_task_file(args.task_file)
+        except (FileNotFoundError, ValueError) as exc:
+            parser.error(str(exc))
+
+    session_id = args.resume or args.session_id
+    if args.local_demo and not session_id:
+        session_id = "local-demo"
+    if args.local_demo and not task_description:
+        task_description = DEFAULT_DEMO_TASK
     
     # Run async workflow
     workflow = asyncio.run(
         run_workflow(
-            task_description=args.task,
-            session_id=args.session_id,
+            task_description=task_description,
+            session_id=session_id,
             debug=args.debug,
             fail_after_phase=args.fail_after_phase,
+            local_demo=args.local_demo,
         )
     )
     

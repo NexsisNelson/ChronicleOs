@@ -57,7 +57,14 @@ class ChronicleConfig(BaseSettings):
 
 def load_config() -> ChronicleConfig:
     """Load configuration from environment."""
-    return ChronicleConfig()
+    return set_config(ChronicleConfig())
+
+
+def set_config(config: ChronicleConfig) -> ChronicleConfig:
+    """Set the configuration singleton and return it."""
+    global _config
+    _config = config
+    return config
 
 
 # Singleton config instance

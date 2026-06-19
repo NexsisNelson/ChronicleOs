@@ -8,6 +8,8 @@ from typing import Optional
 import httpx
 
 from src.config import get_config
+from src.tools.local_store import read_walrus_blob as read_local_walrus_blob
+from src.tools.local_store import save_walrus_blob as save_local_walrus_blob
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +45,7 @@ async def upload_to_walrus(
     config = get_config()
     if not config.walrus_endpoint:
         logger.warning("Walrus endpoint not configured, falling back to local artifact storage")
-        fallback_path = _local_fallback_path(filename)
-        fallback_path.write_bytes(data)
-        return f"local://{fallback_path.name}"
+        return save_local_walrus_blob(filename or "artifact.bin", data, content_type)
 
     upload_url = _walrus_url(config.walrus_endpoint, config.walrus_upload_path)
     async with httpx.AsyncClient(timeout=60.0) as client:
@@ -72,9 +72,7 @@ async def upload_to_walrus(
                 if attempt < 3:
                     await _delay_retry(attempt)
         logger.warning("Walrus upload failed after retries, writing locally instead: %s", last_error)
-        fallback_path = _local_fallback_path(filename)
-        fallback_path.write_bytes(data)
-        return f"local://{fallback_path.name}"
+        return save_local_walrus_blob(filename or "artifact.bin", data, content_type)
 
 
 async def download_from_walrus(cid: str) -> bytes:
@@ -87,9 +85,7 @@ async def download_from_walrus(cid: str) -> bytes:
         Raw bytes of downloaded data
     """
     if cid.startswith("local://"):
-        filename = cid.replace("local://", "")
-        local_path = _local_artifacts_dir() / filename
-        return local_path.read_bytes()
+        return read_local_walrus_blob(cid)
 
     config = get_config()
     if not config.walrus_endpoint:

@@ -2,7 +2,7 @@
 
 A production-ready framework for autonomous agents collaborating on long-running technical tasks, powered by **Walrus** (decentralized storage), **MemWal** (verifiable agent memory), and a **Next.js developer dashboard** for real-time introspection.
 
-For the full end-to-end usage guide, start with [usersLearn.md](./usersLearn.md).
+For the shortest path, start with [docs/START_HERE.md](./docs/START_HERE.md). For the longer walkthrough, see [usersLearn.md](./usersLearn.md).
 
 ```
                   [ Walrus / MemWal Storage Layer ]
@@ -24,19 +24,10 @@ For the full end-to-end usage guide, start with [usersLearn.md](./usersLearn.md)
 ### Installation
 
 ```bash
-# Clone the repo
-git clone <repo-url>
-cd chronicle-os
-
-# Install Node dependencies (dashboard)
-npm install
-
-# Install Python dependencies (agents)
-cd apps/agents
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
+npm run bootstrap
 ```
+
+That one command prepares env files, installs dependencies, and seeds the offline demo store.
 
 ### Development
 
@@ -177,6 +168,7 @@ NEXT_PUBLIC_MEMWAL_API=http://localhost:3001
 ## 📚 Documentation
 
 - [Users Guide](./usersLearn.md)
+- [Start Here](./docs/START_HERE.md)
 - [Developer Setup](./docs/DEVELOPER_SETUP.md)
 - [Example Workflows](./docs/EXAMPLE_WORKFLOWS.md)
 - [Deployment Guide](./DEPLOYMENT.md)

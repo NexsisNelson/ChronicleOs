@@ -1,7 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { MemWalClient } from '@/lib/api/memwal-client'
+import { demoSessionId } from '@/lib/local-demo-data'
 
 const client = new MemWalClient()
 
@@ -11,6 +13,36 @@ type MemoryEntry = {
   agent?: string
   data?: Record<string, unknown>
   proof?: string
+}
+
+function extractArtifactCids(entry: MemoryEntry): string[] {
+  const cids = new Set<string>()
+  const data = entry.data
+
+  if (!data) {
+    return []
+  }
+
+  const directCid = data.walrus_cid
+  if (typeof directCid === 'string') {
+    cids.add(directCid)
+  }
+
+  const result = data.result as Record<string, unknown> | undefined
+  if (result && typeof result.walrus_cid === 'string') {
+    cids.add(result.walrus_cid)
+  }
+
+  const artifacts = data.artifacts as Array<Record<string, unknown>> | undefined
+  if (Array.isArray(artifacts)) {
+    for (const artifact of artifacts) {
+      if (typeof artifact.walrus_cid === 'string') {
+        cids.add(artifact.walrus_cid)
+      }
+    }
+  }
+
+  return Array.from(cids)
 }
 
 export default function HistoryPage() {
@@ -71,11 +103,20 @@ export default function HistoryPage() {
               {error}
             </div>
           ) : entries.length === 0 ? (
-            <p className="text-slate-400">No MemWal entries found yet.</p>
+            <div className="space-y-4 rounded-3xl border border-dashed border-white/10 bg-slate-950/40 p-6 text-sm leading-6 text-slate-400">
+              <p>No MemWal entries found yet.</p>
+              <p>Run the workflow or open the seeded local demo session to inspect an example run.</p>
+              <Link
+                href={`/dashboard/memory?key=research:${demoSessionId}`}
+                className="inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-4 py-2 text-teal-100 transition hover:bg-teal-400/20"
+              >
+                Open demo memory
+              </Link>
+            </div>
           ) : (
             <ul className="space-y-4">
               {entries.map((entry) => (
-                <li key={entry.key ?? Math.random()} className="rounded-3xl border border-white/10 bg-white/5 p-4">
+                <li key={entry.key} className="rounded-3xl border border-white/10 bg-white/5 p-4">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Key</p>
@@ -94,6 +135,23 @@ export default function HistoryPage() {
                       {JSON.stringify(entry.data, null, 2)}
                     </pre>
                   )}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link
+                      href={`/dashboard/memory?key=${encodeURIComponent(entry.key)}`}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200 transition hover:border-teal-400/30 hover:bg-teal-400/10 hover:text-white"
+                    >
+                      Open memory entry
+                    </Link>
+                    {extractArtifactCids(entry).map((cid) => (
+                      <Link
+                        key={cid}
+                        href={`/dashboard/artifacts?cid=${encodeURIComponent(cid)}`}
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+                      >
+                        Open artifact
+                      </Link>
+                    ))}
+                  </div>
                 </li>
               ))}
             </ul>

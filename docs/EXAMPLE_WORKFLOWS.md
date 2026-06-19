@@ -2,6 +2,8 @@
 
 These workflows show how agents produce memory and how the dashboard reflects the live state.
 
+For a faster first run, follow [Start Here](./START_HERE.md) and use `npm run bootstrap` before trying the examples below.
+
 ## Workflow 1: Run the agents locally
 
 1. Start MemWal and Walrus with Docker Compose.

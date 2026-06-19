@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { MemWalClient } from '@/lib/api/memwal-client'
+import { demoMemoryEntries } from '@/lib/local-demo-data'
 
 const client = new MemWalClient()
 
@@ -11,18 +14,29 @@ export default function MemoryPage() {
   const [keys, setKeys] = useState<string[]>([])
   const [prefix, setPrefix] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const initialKey = searchParams.get('key')
+    if (initialKey) {
+      setKey(initialKey)
+      void loadMemory(initialKey)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   // Load a single MemWal entry by key and display it in the UI.
-  const loadMemory = async () => {
+  const loadMemory = async (memoryKey?: string) => {
     setError(null)
     setEntries(null)
-    if (!key) {
+    const queryKey = memoryKey ?? key
+    if (!queryKey) {
       setError('Enter a MemWal memory key to query')
       return
     }
 
     try {
-      const result = await client.getMemory(key)
+      const result = await client.getMemory(queryKey)
       setEntries(result)
       if (!result) {
         setError('No memory entry found for that key.')
@@ -69,10 +83,21 @@ export default function MemoryPage() {
             />
             <button
               className="mt-4 inline-flex items-center justify-center rounded-full bg-teal-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-teal-300"
-              onClick={loadMemory}
+              onClick={() => void loadMemory()}
             >
               Load Entry
             </button>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
+              {demoMemoryEntries.map((entry) => (
+                <Link
+                  key={entry.key}
+                  href={`/dashboard/memory?key=${encodeURIComponent(entry.key)}`}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 transition hover:border-teal-400/30 hover:bg-teal-400/10 hover:text-white"
+                >
+                  {entry.key}
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="surface rounded-[28px] p-6">
@@ -103,9 +128,15 @@ export default function MemoryPage() {
         <div className="space-y-6">
           <div className="surface rounded-[28px] p-6">
             <h3 className="text-lg font-semibold text-white mb-3">Memory Entry</h3>
-            <pre className="min-h-[240px] overflow-x-auto whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-200">
-              {entries ? JSON.stringify(entries, null, 2) : 'No memory entry loaded yet.'}
-            </pre>
+            {entries ? (
+              <pre className="min-h-[240px] overflow-x-auto whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-200">
+                {JSON.stringify(entries, null, 2)}
+              </pre>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-6 text-sm leading-6 text-slate-400">
+                No memory entry loaded yet. Try one of the demo keys above or paste a session key from the history page.
+              </div>
+            )}
           </div>
 
           <div className="surface rounded-[28px] p-6">

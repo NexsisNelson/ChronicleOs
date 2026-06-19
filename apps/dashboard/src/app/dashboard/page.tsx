@@ -1,9 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Activity, ArrowRight, Database, Layers3, ShieldCheck, Sparkles } from 'lucide-react'
+import { Activity, ArrowRight, CheckCircle2, Database, Layers3, ShieldCheck, Sparkles } from 'lucide-react'
 import { MemWalClient } from '@/lib/api/memwal-client'
 import { WalrusClient } from '@/lib/api/walrus-client'
+import { demoSessionId } from '@/lib/local-demo-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,6 +81,20 @@ export default function DashboardHome() {
                 <p className="mt-1 text-sm text-white">Researcher, Architect, Auditor</p>
               </div>
             </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={`/dashboard/memory?key=research:${demoSessionId}`}
+                className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+              >
+                Open demo memory
+              </Link>
+              <Link
+                href="/dashboard/history"
+                className="inline-flex items-center rounded-full border border-teal-400/30 bg-teal-400/10 px-4 py-2 text-sm text-teal-100 transition hover:bg-teal-400/20"
+              >
+                Open run history
+              </Link>
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -124,6 +140,42 @@ export default function DashboardHome() {
             <QuickLink href="/dashboard/artifacts" label="Browse artifacts" />
             <QuickLink href="/dashboard/history" label="View history" />
           </div>
+        </div>
+      </section>
+
+      <section className="surface rounded-[28px] p-6 sm:p-8">
+        <div className="mb-5 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-teal-300" />
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-teal-300/80">Quick checklist</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">What to do next</h2>
+          </div>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <ChecklistItem
+            title="1. Bootstrap the workspace"
+            description="Run the single bootstrap command to create env files, install dependencies, and prepare local demo data."
+            href="/docs/START_HERE.md"
+            actionLabel="Open setup guide"
+          />
+          <ChecklistItem
+            title="2. Start local demo mode"
+            description="Use the local demo routes and seeded data when you want a no-secrets, offline walkthrough."
+            href={`/dashboard/history`}
+            actionLabel="Inspect demo run"
+          />
+          <ChecklistItem
+            title="3. Run a real workflow"
+            description="Launch the agents with a task, then inspect the memory and artifact entries that are written."
+            href="/dashboard/memory"
+            actionLabel="Open memory timeline"
+          />
+          <ChecklistItem
+            title="4. Follow the persisted links"
+            description="Use the run history to jump directly from a workflow key to its memory and artifact records."
+            href="/dashboard/history"
+            actionLabel="Open history"
+          />
         </div>
       </section>
 
@@ -188,5 +240,30 @@ function QuickLink({ href, label }: { href: string; label: string }) {
     >
       {label}
     </a>
+  )
+}
+
+function ChecklistItem({
+  title,
+  description,
+  href,
+  actionLabel,
+}: {
+  title: string
+  description: string
+  href: string
+  actionLabel: string
+}) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+      <p className="text-sm font-semibold text-white">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+      <Link
+        href={href}
+        className="mt-4 inline-flex items-center rounded-full border border-white/10 bg-slate-950/40 px-4 py-2 text-sm text-slate-200 transition hover:border-teal-400/30 hover:bg-teal-400/10 hover:text-white"
+      >
+        {actionLabel}
+      </Link>
+    </div>
   )
 }

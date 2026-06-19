@@ -34,6 +34,14 @@ cd chronicle-os
 
 ## 4. Install Dependencies
 
+The quickest path is the one-command bootstrap:
+
+```bash
+npm run bootstrap
+```
+
+If you prefer to install things manually, keep following the steps below.
+
 Install the root workspace dependencies first:
 
 ```bash

@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { WalrusClient, WalrusObject } from '@/lib/api/walrus-client'
+import { demoArtifacts } from '@/lib/local-demo-data'
 
 const client = new WalrusClient()
 
@@ -10,22 +13,33 @@ export default function ArtifactsPage() {
   const [metadata, setMetadata] = useState<WalrusObject | null>(null)
   const [content, setContent] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const initialCid = searchParams.get('cid')
+    if (initialCid) {
+      setCid(initialCid)
+      void fetchArtifact(initialCid)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   // Fetch metadata and text content for a Walrus object by CID.
-  const fetchArtifact = async () => {
+  const fetchArtifact = async (artifactCid?: string) => {
     setError(null)
     setMetadata(null)
     setContent(null)
 
-    if (!cid) {
+    const queryCid = artifactCid ?? cid
+    if (!queryCid) {
       setError('Enter a Walrus CID to inspect')
       return
     }
 
     try {
-      const meta = await client.getObjectMetadata(cid)
+      const meta = await client.getObjectMetadata(queryCid)
       setMetadata(meta)
-      const text = await client.getTextContent(cid)
+      const text = await client.getTextContent(queryCid)
       setContent(text)
     } catch (err) {
       setError('Unable to load Walrus artifact. Check the CID and gateway URL.')
@@ -57,10 +71,21 @@ export default function ArtifactsPage() {
             <button
               type="button"
               className="mt-4 inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
-              onClick={fetchArtifact}
+              onClick={() => void fetchArtifact()}
             >
               Load Artifact
             </button>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
+              {demoArtifacts.map((artifact) => (
+                <Link
+                  key={artifact.cid}
+                  href={`/dashboard/artifacts?cid=${encodeURIComponent(artifact.cid)}`}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+                >
+                  {artifact.name}
+                </Link>
+              ))}
+            </div>
           </div>
 
           {error && (
@@ -83,7 +108,10 @@ export default function ArtifactsPage() {
             {content ? (
               <pre className="whitespace-pre-wrap break-words">{content}</pre>
             ) : (
-              <p className="text-slate-500">Enter a CID and click Load Artifact to preview a text artifact from Walrus.</p>
+              <div className="space-y-3 text-slate-500">
+                <p>Enter a CID and click Load Artifact to preview a text artifact from Walrus.</p>
+                <p>If you are just getting started, use one of the seeded demo artifacts above.</p>
+              </div>
             )}
           </div>
         </div>

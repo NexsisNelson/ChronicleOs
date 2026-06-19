@@ -106,6 +106,8 @@ powershell -File scripts/run-example-workflow.ps1
 
 The workflow writes `research:*`, `architect:*`, and `audit:*` entries to MemWal and publishes artifacts to Walrus so the dashboard pages can show the fresh data immediately.
 
+If you want to clear the local demo data and rerun from scratch, use `npm run reset:local`.
+
 ## Environment configuration
 
 ### Dashboard

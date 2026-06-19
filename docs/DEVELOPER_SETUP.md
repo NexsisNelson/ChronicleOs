@@ -1,6 +1,6 @@
 # Developer Setup
 
-This guide shows how to prepare ChronicleOS on Windows, macOS, and Linux.
+This guide shows how to prepare ChronicleOS on Windows, macOS, and Linux. For the shortest path, use [Start Here](./START_HERE.md).
 
 ## Prerequisites
 
@@ -15,6 +15,7 @@ This guide shows how to prepare ChronicleOS on Windows, macOS, and Linux.
 ```bash
 git clone https://github.com/chronicle-os/chronicle-os.git
 cd chronicle-os
+npm run bootstrap
 ```
 
 ## 2. Set up Python for the agents
