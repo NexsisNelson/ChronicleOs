@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Activity, ArrowRight, CheckCircle2, Database, Layers3, ShieldCheck, Sparkles } from 'lucide-react'
+import { Activity, ArrowRight, CheckCircle2, Database, Layers3, MessageSquarePlus, ShieldCheck, Sparkles } from 'lucide-react'
 import { MemWalClient } from '@/lib/api/memwal-client'
 import { WalrusClient } from '@/lib/api/walrus-client'
 import { demoSessionId } from '@/lib/local-demo-data'
@@ -87,6 +87,12 @@ export default function DashboardHome() {
                 className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
               >
                 Open demo memory
+              </Link>
+              <Link
+                href="/dashboard/tasks"
+                className="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-400/20"
+              >
+                Launch a task
               </Link>
               <Link
                 href="/dashboard/history"
@@ -181,11 +187,11 @@ export default function DashboardHome() {
 
       <section className="surface rounded-[28px] p-6 sm:p-8">
         <div className="mb-6 flex items-center gap-3">
-          <ArrowRight className="h-5 w-5 text-teal-300" />
+          <MessageSquarePlus className="h-5 w-5 text-teal-300" />
           <h2 className="text-2xl font-semibold text-white">Operational notes</h2>
         </div>
         <p className="max-w-3xl text-sm leading-6 text-slate-400">
-          ChronicleOS is optimized for inspection rather than synthetic demos. Once the agent workflow runs, the dashboard becomes the place to verify memory, review artifacts, and follow execution state across sessions.
+          ChronicleOS is optimized for inspection rather than synthetic demos, but the fastest way to start a run is the new Task Launcher: write a task once, copy the command, and launch the workflow from the same screen.
         </p>
       </section>
     </div>

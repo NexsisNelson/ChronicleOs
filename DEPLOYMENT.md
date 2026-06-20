@@ -55,6 +55,16 @@ For a clean testnet deployment that uses remote Walrus testnet storage and local
 docker-compose -f docker-compose.testnet.yml up --build
 ```
 
+If you want a one-step helper that also creates the local env files from the testnet templates, run:
+
+```powershell
+powershell -File scripts/deploy-testnet.ps1
+```
+
+```bash
+./scripts/deploy-testnet.sh
+```
+
 Then copy the provided testnet env templates:
 
 ```bash

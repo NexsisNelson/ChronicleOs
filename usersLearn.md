@@ -363,6 +363,10 @@ docker compose up -d memwal walrus dashboard
 docker compose -f docker-compose.testnet.yml up --build
 ```
 
+```powershell
+powershell -File scripts/deploy-testnet.ps1
+```
+
 ```bash
 docker compose -f docker-compose.prod.yml up --build
 ```

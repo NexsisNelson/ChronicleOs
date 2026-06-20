@@ -31,6 +31,10 @@ npm run dev
 
 Open the dashboard, then run a workflow in another terminal.
 
+If you want the fastest way to hand ChronicleOS a task, open the dashboard Task Launcher first and paste your prompt there. It will generate the exact command and session id for you.
+
+If you want the shortest path, use the dashboard's Submit and run latest task button. It saves the task and launches the workflow without requiring you to paste a command.
+
 ### Windows PowerShell
 
 ```powershell

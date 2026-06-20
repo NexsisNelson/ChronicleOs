@@ -2,6 +2,10 @@
 
 These workflows show how agents produce memory and how the dashboard reflects the live state.
 
+For the easiest handoff, use the dashboard Task Launcher to turn a plain-language request into a runnable command or task file.
+
+For the truly one-click path, use Submit and run latest task so the dashboard saves the request and launches it immediately.
+
 For a faster first run, follow [Start Here](./START_HERE.md) and use `npm run bootstrap` before trying the examples below.
 
 ## Workflow 1: Run the agents locally

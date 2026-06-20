@@ -12,6 +12,7 @@ export default function DashboardLayout({
 
   const navItems = [
     { href: '/dashboard', label: 'Overview' },
+    { href: '/dashboard/tasks', label: 'Task Launcher' },
     { href: '/dashboard/memory', label: 'Memory Timeline' },
     { href: '/dashboard/artifacts', label: 'Artifact Explorer' },
     { href: '/dashboard/agents', label: 'Agent Monitor' },

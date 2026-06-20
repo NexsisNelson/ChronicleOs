@@ -31,6 +31,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - '3000:3000'
+    env_file:
+      - apps/dashboard/.env.local
     environment:
       NEXT_PUBLIC_MEMWAL_API: http://memwal:8000
       NEXT_PUBLIC_WALRUS_GATEWAY: https://walrus-testnet-gateway.sui.io
@@ -44,6 +46,8 @@ services:
     build:
       context: ./apps/agents
       dockerfile: Dockerfile
+    env_file:
+      - apps/agents/.env
     environment:
       WALRUS_ENDPOINT: https://walrus-testnet.sui.io
       WALRUS_UPLOAD_PATH: /blobs
