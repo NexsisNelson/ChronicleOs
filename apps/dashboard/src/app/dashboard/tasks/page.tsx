@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Check, Copy, Download, Sparkles, TerminalSquare, WandSparkles } from 'lucide-react'
+import { Check, Copy, Download, Sparkles, TerminalSquare, Wand2 } from 'lucide-react'
 
 const defaultTask = 'Research the latest ChronicleOS workflow improvements and summarize the best next step for users.'
 const defaultSessionId = 'task-1'
@@ -150,78 +150,71 @@ export default function TaskLauncherPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="surface rounded-[28px] p-6 sm:p-8 lg:p-10">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr,0.9fr] lg:items-end">
-          <div className="space-y-4">
+    <div className="grid gap-4 xl:h-[calc(100vh-9.5rem)] xl:grid-cols-[1.1fr,0.9fr] xl:gap-5">
+      <section className="surface flex min-h-0 flex-col rounded-[28px] p-5 sm:p-6 lg:p-7">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-cyan-100">
               <Sparkles className="h-3.5 w-3.5" /> Task Launcher
             </div>
-            <div className="space-y-3">
-              <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Write one task, copy one command, and start the workflow.
+            <div className="space-y-2">
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Submit and run tasks from one screen.
               </h1>
-              <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                This page removes the terminal-friction step. Users can draft a task in plain language, assign a session id, and launch ChronicleOS from the same place with one click.
+              <p className="max-w-2xl text-sm leading-6 text-slate-300 sm:text-[15px]">
+                Draft a task, assign a session id, and launch ChronicleOS without leaving the dashboard.
               </p>
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
-            <div className="flex items-center gap-3 text-cyan-100">
-              <WandSparkles className="h-5 w-5" />
-              <p className="text-sm font-medium uppercase tracking-[0.24em]">Quick start</p>
-            </div>
-            <ol className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-              <li>1. Paste the task you want ChronicleOS to handle.</li>
-              <li>2. Pick a session id so the run is easy to find later.</li>
-              <li>3. Click Submit and run latest task to launch it immediately.</li>
-            </ol>
+          <div className="hidden rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right md:block">
+            <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">Screen fit</p>
+            <p className="mt-1 text-sm text-white">Compact layout</p>
           </div>
         </div>
-      </section>
 
-      <div className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
-        <section className="surface rounded-[28px] p-6 sm:p-8">
-          <div className="mb-5 flex items-center gap-3">
-            <TerminalSquare className="h-5 w-5 text-cyan-300" />
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-cyan-300/80">Task input</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">Describe the work once</h2>
-            </div>
-          </div>
-
-          <div className="space-y-5">
-            <label className="block">
-              <span className="text-xs uppercase tracking-[0.24em] text-slate-500">Task</span>
-              <textarea
-                className="mt-2 min-h-40 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-base leading-7 text-white outline-none transition focus:border-cyan-400/40"
-                value={task}
-                onChange={(event) => setTask(event.target.value)}
-                placeholder="What should ChronicleOS research, summarize, or analyze?"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-xs uppercase tracking-[0.24em] text-slate-500">Session id</span>
-              <input
-                className="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
-                value={sessionId}
-                onChange={(event) => setSessionId(event.target.value.replace(/[^a-zA-Z0-9._-]/g, '-'))}
-                placeholder="task-1"
-              />
-            </label>
-
-            <div className="rounded-3xl border border-dashed border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-400">
-              Keep the task specific and outcome-oriented. If it is long, use the task file download so the full prompt stays readable and reusable.
+        <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.05fr,0.95fr]">
+          <div className="flex min-h-0 flex-col gap-4 rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
+            <div className="flex items-center gap-3">
+              <TerminalSquare className="h-5 w-5 text-cyan-300" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-cyan-300/80">Task input</p>
+                <h2 className="mt-1 text-xl font-semibold text-white">Describe the work once</h2>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="grid gap-3 sm:grid-cols-[1fr,220px]">
+              <label className="block sm:col-span-2">
+                <span className="text-xs uppercase tracking-[0.24em] text-slate-500">Task</span>
+                <textarea
+                  className="mt-2 min-h-36 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm leading-6 text-white outline-none transition focus:border-cyan-400/40"
+                  value={task}
+                  onChange={(event) => setTask(event.target.value)}
+                  placeholder="What should ChronicleOS research, summarize, or analyze?"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-xs uppercase tracking-[0.24em] text-slate-500">Session id</span>
+                <input
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/40"
+                  value={sessionId}
+                  onChange={(event) => setSessionId(event.target.value.replace(/[^a-zA-Z0-9._-]/g, '-'))}
+                  placeholder="task-1"
+                />
+              </label>
+
+              <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-400">
+                Keep it specific and outcome-oriented. Long tasks still work, but concise prompts fit best.
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-1">
               <button
                 type="button"
                 onClick={() => void submitTask()}
                 disabled={submitting}
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-medium text-cyan-100 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2.5 text-sm font-medium text-cyan-100 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? 'Submitting…' : 'Submit task'}
               </button>
@@ -229,40 +222,52 @@ export default function TaskLauncherPage() {
                 type="button"
                 onClick={() => void submitAndRunTask()}
                 disabled={submitting || running}
-                className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-400/10 px-5 py-3 text-sm font-medium text-teal-100 transition hover:bg-teal-400/20 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-400/10 px-4 py-2.5 text-sm font-medium text-teal-100 transition hover:bg-teal-400/20 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting || running ? 'Launching…' : 'Submit and run latest task'}
               </button>
               <button
                 type="button"
                 onClick={() => void copyText(taskFileContent, 'task')}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
               >
                 {copied === 'task' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                Copy task text
+                Copy task
               </button>
             </div>
 
-            {submissionMessage && (
-              <div className="rounded-3xl border border-white/10 bg-slate-950/60 p-4 text-sm leading-6 text-slate-200">
-                {submissionMessage}
-              </div>
-            )}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {submissionMessage && (
+                <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-3 text-sm leading-6 text-slate-200">
+                  {submissionMessage}
+                </div>
+              )}
 
-            {runMessage && (
-              <div className="rounded-3xl border border-teal-400/20 bg-teal-400/10 p-4 text-sm leading-6 text-teal-50">
-                {runMessage}
-              </div>
-            )}
+              {runMessage && (
+                <div className="rounded-2xl border border-teal-400/20 bg-teal-400/10 p-3 text-sm leading-6 text-teal-50">
+                  {runMessage}
+                </div>
+              )}
+            </div>
           </div>
-        </section>
 
-        <section className="space-y-6">
-          <div className="surface rounded-[28px] p-6 sm:p-8">
-            <h2 className="text-xl font-semibold text-white">Copy a command</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Choose the command that matches your shell and paste it directly into the terminal.</p>
+          <div className="flex min-h-0 flex-col gap-4 rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Run controls</h2>
+                <p className="mt-1 text-sm text-slate-400">Copy commands or launch the last submitted task directly.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => void runLatestSubmittedTask(sessionId || defaultSessionId)}
+                disabled={running}
+                className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-400/10 px-4 py-2 text-sm text-teal-100 transition hover:bg-teal-400/20 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {running ? 'Running…' : 'Run latest'}
+              </button>
+            </div>
 
-            <div className="mt-5 space-y-4">
+            <div className="grid min-h-0 gap-3 lg:grid-rows-[auto_auto_1fr]">
               <CommandCard
                 label="Windows PowerShell"
                 command={powerShellCommand}
@@ -275,64 +280,49 @@ export default function TaskLauncherPage() {
                 onCopy={() => void copyText(bashCommand, 'bash')}
                 copied={copied === 'bash'}
               />
-            </div>
-          </div>
 
-          <div className="surface rounded-[28px] p-6 sm:p-8">
-            <h2 className="text-xl font-semibold text-white">Task file</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Download the task as a plain text file when you want to hand it off, reuse it, or keep it in source control.</p>
+              <div className="min-h-0 rounded-3xl border border-dashed border-white/10 bg-slate-950/40 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Task file</h3>
+                    <p className="mt-1 text-sm leading-6 text-slate-400">A compact preview and download for sharing or reuse.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={downloadTaskFile}
+                    className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-sm text-cyan-100 transition hover:bg-cyan-400/20"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download
+                  </button>
+                </div>
 
-            <div className="mt-5 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
-              <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-200">{taskFileContent}</pre>
-            </div>
+                <div className="mt-3 max-h-[12rem] overflow-auto rounded-2xl border border-white/10 bg-slate-950/70 p-3">
+                  <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-200">{taskFileContent}</pre>
+                </div>
 
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => void copyText(taskFileContent, 'task')}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
-              >
-                {copied === 'task' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                Copy task text
-              </button>
-              <button
-                type="button"
-                onClick={downloadTaskFile}
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-400/20"
-              >
-                <Download className="h-4 w-4" />
-                Download task file
-              </button>
-            </div>
-
-            {taskFilePath && (
-              <div className="mt-5 space-y-3 rounded-3xl border border-white/10 bg-slate-950/60 p-4 text-sm text-slate-200">
-                <p className="text-slate-400">Submitted task file: {taskFilePath}</p>
-                <button
-                  type="button"
-                  onClick={() => void runLatestSubmittedTask(sessionId || defaultSessionId)}
-                  disabled={running}
-                  className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-400/10 px-4 py-2 text-sm text-teal-100 transition hover:bg-teal-400/20 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {running ? 'Running…' : 'Run latest submitted task'}
-                </button>
-                <CommandCard
-                  label="Windows PowerShell launch"
-                  command={submissionPowerShellCommand}
-                  onCopy={() => void copyText(submissionPowerShellCommand, 'powershell')}
-                  copied={copied === 'powershell'}
-                />
-                <CommandCard
-                  label="macOS / Linux launch"
-                  command={submissionBashCommand}
-                  onCopy={() => void copyText(submissionBashCommand, 'bash')}
-                  copied={copied === 'bash'}
-                />
+                {taskFilePath && (
+                  <div className="mt-3 space-y-3 rounded-2xl border border-white/10 bg-slate-950/60 p-3 text-sm text-slate-200">
+                    <p className="text-slate-400">Submitted task file: {taskFilePath}</p>
+                    <CommandCard
+                      label="PowerShell launch"
+                      command={submissionPowerShellCommand}
+                      onCopy={() => void copyText(submissionPowerShellCommand, 'powershell')}
+                      copied={copied === 'powershell'}
+                    />
+                    <CommandCard
+                      label="Linux / macOS launch"
+                      command={submissionBashCommand}
+                      onCopy={() => void copyText(submissionBashCommand, 'bash')}
+                      copied={copied === 'bash'}
+                    />
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }
@@ -349,19 +339,19 @@ function CommandCard({
   copied: boolean
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{label}</p>
+        <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">{label}</p>
         <button
           type="button"
           onClick={onCopy}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1.5 text-xs text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1.5 text-[11px] text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
         >
           {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
-      <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs leading-6 text-slate-200">{command}</pre>
+      <pre className="mt-2 max-h-24 overflow-auto rounded-xl border border-white/10 bg-slate-950/70 p-2.5 text-[11px] leading-5 text-slate-200">{command}</pre>
     </div>
   )
 }
