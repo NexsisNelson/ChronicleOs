@@ -20,6 +20,7 @@ For the shortest path, start with [docs/START_HERE.md](./docs/START_HERE.md). Fo
 - **npm** ≥ 8.19.4
 - Walrus devnet tokens (for storage gas fees)
 - LLM API key (OpenAI, Anthropic, or Deepseek)
+- For hosted Walrus Memory: `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL`
 
 ### Installation
 
@@ -163,6 +164,9 @@ approval = auditor.review(artifact)
 WALRUS_ENDPOINT=https://walrus-devnet.sui.io
 MEMWAL_ENDPOINT=http://localhost:8000
 WALRUS_PRIVATE_KEY=<your-sui-private-key>
+MEMWAL_PRIVATE_KEY=<your-ed25519-delegate-private-key-hex>
+MEMWAL_ACCOUNT_ID=<your-walrus-memory-account-id>
+MEMWAL_SERVER_URL=https://relayer.staging.memwal.ai
 OPENAI_API_KEY=<your-api-key>
 LOG_LEVEL=INFO
 ```
@@ -170,7 +174,7 @@ LOG_LEVEL=INFO
 **`apps/dashboard/.env.local`:**
 ```
 NEXT_PUBLIC_WALRUS_GATEWAY=https://walrus-testnet-gateway.sui.io
-NEXT_PUBLIC_MEMWAL_API=http://localhost:3001
+NEXT_PUBLIC_MEMWAL_API=/api/memwal
 ```
 
 ## 📚 Documentation

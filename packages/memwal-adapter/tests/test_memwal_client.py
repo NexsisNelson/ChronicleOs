@@ -69,12 +69,58 @@ class FakeAsyncClient:
         return None
 
 
+class FakeSdkResult:
+    def __init__(self, blob_id="blob-123", result_id="result-123", owner="owner-123", namespace="default"):
+        self.blob_id = blob_id
+        self.id = result_id
+        self.owner = owner
+        self.namespace = namespace
+
+
+class FakeSdkRecallMemory:
+    def __init__(self, blob_id: str, text: str, distance: float = 0.01):
+        self.blob_id = blob_id
+        self.text = text
+        self.distance = distance
+
+
+class FakeSdkRecallResult:
+    def __init__(self, results):
+        self.results = results
+
+
+class FakeSdkClient:
+    def __init__(self):
+        self.saved_texts = []
+        self.closed = False
+
+    async def remember_and_wait(self, text, namespace=None, poll_interval_ms=1500, timeout_ms=60000):
+        self.saved_texts.append((text, namespace))
+        return FakeSdkResult(namespace=namespace or "default")
+
+    async def recall(self, query, limit=10, namespace=None, max_distance=None):
+        if not self.saved_texts:
+            return FakeSdkRecallResult([])
+        return FakeSdkRecallResult([
+            FakeSdkRecallMemory(blob_id="blob-123", text=self.saved_texts[-1][0])
+        ])
+
+    async def close(self):
+        self.closed = True
+
+
+class FakeMemWalFactory:
+    @staticmethod
+    def create(*args, **kwargs):
+        return FakeSdkClient()
+
+
 @pytest.mark.asyncio
 async def test_memwal_client_and_shared_workspace(monkeypatch):
     fake_client = FakeAsyncClient()
     monkeypatch.setattr(httpx, "AsyncClient", lambda *args, **kwargs: fake_client)
 
-    client = MemWalClient("http://memwal.local", api_key="test-key")
+    client = MemWalClient("http://memwal.local")
     proof = await client.save_memory("alpha", {"value": 1}, {"source": "test"})
     keys = await client.list_memory_keys()
     memory = await client.read_memory("alpha")
@@ -102,3 +148,26 @@ async def test_memwal_client_and_shared_workspace(monkeypatch):
     assert artifact.data == {"status": "ok"}
     assert artifact_keys
     assert artifact_keys[0].name == "report_researcher"
+
+
+@pytest.mark.asyncio
+async def test_memwal_client_uses_sdk_when_credentials_are_present(monkeypatch):
+    import memwal_adapter.core.client as client_module
+
+    monkeypatch.setattr(client_module, "MemWal", FakeMemWalFactory)
+
+    client = MemWalClient(
+        "http://localhost:8000",
+        private_key="0xabc",
+        account_id="0x123",
+        server_url="https://relayer.staging.memwal.ai",
+    )
+
+    proof = await client.save_memory("alpha", {"value": 1}, {"source": "test"})
+    memory = await client.read_memory("alpha")
+
+    assert proof["proof"] == "blob-123"
+    assert proof["remote_owner"] == "owner-123"
+    assert memory is not None
+    assert memory["key"] == "alpha"
+    assert memory["data"] == {"value": 1}

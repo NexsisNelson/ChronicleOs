@@ -28,7 +28,10 @@ class SharedWorkspace:
         self,
         session_id: str,
         endpoint: str,
-        api_key: Optional[str] = None,
+        private_key: Optional[str] = None,
+        account_id: Optional[str] = None,
+        server_url: Optional[str] = None,
+        namespace: str = "default",
     ):
         """
         Initialize shared workspace.
@@ -36,13 +39,22 @@ class SharedWorkspace:
         Args:
             session_id: Session identifier
             endpoint: MemWal API endpoint
-            api_key: Optional API key
+            private_key: Optional hosted Walrus Memory delegate key
+            account_id: Optional hosted Walrus Memory account id
+            server_url: Optional hosted Walrus Memory relayer URL
+            namespace: Namespace to isolate workspace memory
         """
         from memwal_adapter.core.client import MemWalClient
 
         self.session_id = session_id
         self.endpoint = endpoint
-        self.client = MemWalClient(endpoint, api_key)
+        self.client = MemWalClient(
+            endpoint,
+            private_key=private_key,
+            account_id=account_id,
+            server_url=server_url,
+            namespace=namespace,
+        )
         self.workspace_key = f"workspace:{session_id}"
 
     async def save_artifact(

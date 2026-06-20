@@ -1,0 +1,53 @@
+{
+  "key": "workflow:task-1:checkpoint",
+  "data": {
+    "task_id": "task-1",
+    "task_description": "Research the latest ChronicleOS workflow improvements and summarize the best next step for users.",
+    "checkpoint_stage": "research",
+    "research": {
+      "task_id": "task-1",
+      "sources": [
+        {
+          "title": "Research Source 1",
+          "url": "https://example.com/source1",
+          "content": "Sample research content for source 1",
+          "timestamp": "2026-06-20T11:40:31.930153"
+        },
+        {
+          "title": "Research Source 2",
+          "url": "https://example.com/source2",
+          "content": "Sample research content for source 2",
+          "timestamp": "2026-06-20T11:40:31.930171"
+        },
+        {
+          "title": "Research Source 3",
+          "url": "https://example.com/source3",
+          "content": "Sample research content for source 3",
+          "timestamp": "2026-06-20T11:40:31.930177"
+        }
+      ],
+      "raw_data": {
+        "query": "Research the latest ChronicleOS workflow improvements and summarize the best next step for users.",
+        "total_sources": 3,
+        "processed_at": "2026-06-20T11:40:41.050225"
+      },
+      "walrus_cids": [
+        "local://task-1_research.json"
+      ],
+      "summary": "Researched: Research the latest ChronicleOS workflow improvements and summarize the best next step for users.. Found 3 relevant sources.",
+      "confidence": 0.75,
+      "completed_at": "2026-06-20T11:40:41.050262"
+    },
+    "architecture": null,
+    "audit": null,
+    "created_at": "2026-06-20T11:40:50.249320",
+    "completed_at": null
+  },
+  "metadata": {
+    "kind": "workflow_checkpoint"
+  },
+  "agent": "workflow",
+  "timestamp": "2026-06-20T10:40:59.180893Z",
+  "saved_at": "2026-06-20T10:40:59.180893Z",
+  "proof": "local:workflow%3Atask-1%3Acheckpoint"
+}

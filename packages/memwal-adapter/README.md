@@ -9,6 +9,7 @@ A lightweight Python SDK that bridges **MemWal** (verifiable agent memory) with 
 - **Cryptographic Proofs** - All memory updates are cryptographically signed
 - **Shared Workspace Protocol** - Standardized directory structure for multi-agent collaboration
 - **Cross-Agent Context** - Agents can read shared memory to understand decisions made by others
+- **Hosted Walrus Memory Support** - Uses the official `memwal` SDK when `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL` are configured
 
 ## Installation
 

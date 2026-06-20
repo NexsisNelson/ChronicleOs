@@ -14,7 +14,10 @@ class MemWalStateStore:
         self,
         endpoint: str,
         workspace_id: str,
-        api_key: Optional[str] = None,
+        private_key: Optional[str] = None,
+        account_id: Optional[str] = None,
+        server_url: Optional[str] = None,
+        namespace: str = "default",
     ):
         """
         Initialize MemWal-backed state store for LangGraph.
@@ -22,13 +25,22 @@ class MemWalStateStore:
         Args:
             endpoint: MemWal API endpoint
             workspace_id: Workspace identifier
-            api_key: Optional API key
+            private_key: Optional hosted Walrus Memory delegate key
+            account_id: Optional hosted Walrus Memory account id
+            server_url: Optional hosted Walrus Memory relayer URL
+            namespace: Namespace to isolate state
         """
         from memwal_adapter.core.client import MemWalClient
 
         self.endpoint = endpoint
         self.workspace_id = workspace_id
-        self.client = MemWalClient(endpoint, api_key)
+        self.client = MemWalClient(
+            endpoint,
+            private_key=private_key,
+            account_id=account_id,
+            server_url=server_url,
+            namespace=namespace,
+        )
 
     async def put(self, key: str, value: Dict[str, Any]) -> None:
         """Store state in MemWal."""

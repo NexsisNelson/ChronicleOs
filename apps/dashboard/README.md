@@ -24,7 +24,7 @@ Create `.env.local`:
 
 ```
 NEXT_PUBLIC_WALRUS_GATEWAY=https://walrus-testnet-gateway.sui.io
-NEXT_PUBLIC_MEMWAL_API=http://localhost:3001
+NEXT_PUBLIC_MEMWAL_API=/api/memwal
 NEXT_PUBLIC_LOG_LEVEL=info
 ```
 

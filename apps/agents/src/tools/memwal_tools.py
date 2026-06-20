@@ -28,17 +28,22 @@ async def save_to_memwal(
         Cryptographic proof of storage
     """
     config = get_config()
-    if not config.memwal_endpoint:
-        payload = save_local_memwal_entry(key, data, metadata)
+    payload = save_local_memwal_entry(key, data, metadata)
+
+    if not config.memwal_endpoint and not config.memwal_private_key:
         return payload.get("proof", "")
 
-    async with MemWalClient(config.memwal_endpoint, config.memwal_api_key) as client:
+    async with MemWalClient(
+        config.memwal_endpoint,
+        private_key=config.memwal_private_key,
+        account_id=config.memwal_account_id,
+        server_url=config.memwal_server_url,
+    ) as client:
         try:
             result = await client.save_memory(key, data, metadata)
-            return result.get("proof") or result.get("signature") or result.get("id") or ""
+            return result.get("proof") or result.get("blob_id") or result.get("id") or payload.get("proof", "")
         except Exception as exc:
             logger.warning("MemWal save failed, using local demo store instead: %s", exc)
-            payload = save_local_memwal_entry(key, data, metadata)
             return payload.get("proof", "")
 
 
@@ -52,27 +57,28 @@ async def read_from_memwal(key: str) -> Dict[str, Any]:
         Stored data
     """
     config = get_config()
-    if not config.memwal_endpoint:
-        return read_local_memwal_entry(key)
+    local_entry = read_local_memwal_entry(key)
+    if local_entry:
+        return local_entry
 
-    async with MemWalClient(config.memwal_endpoint, config.memwal_api_key) as client:
+    if not config.memwal_endpoint and not config.memwal_private_key:
+        return local_entry
+
+    async with MemWalClient(
+        config.memwal_endpoint,
+        private_key=config.memwal_private_key,
+        account_id=config.memwal_account_id,
+        server_url=config.memwal_server_url,
+    ) as client:
         try:
             result = await client.read_memory(key)
-            return result or read_local_memwal_entry(key)
+            return result or local_entry
         except Exception as exc:
             logger.warning("MemWal read failed, using local demo store instead: %s", exc)
-            return read_local_memwal_entry(key)
+            return local_entry
 
 
 async def list_memwal_keys(prefix: Optional[str] = None) -> List[str]:
     """List all keys in MemWal memory."""
-    config = get_config()
-    if not config.memwal_endpoint:
-        return list_local_memwal_keys(prefix=prefix)
-
-    async with MemWalClient(config.memwal_endpoint, config.memwal_api_key) as client:
-        try:
-            return await client.list_memory_keys(prefix=prefix)
-        except Exception as exc:
-            logger.warning("MemWal key listing failed, using local demo store instead: %s", exc)
-            return list_local_memwal_keys(prefix=prefix)
+    _ = get_config()
+    return list_local_memwal_keys(prefix=prefix)

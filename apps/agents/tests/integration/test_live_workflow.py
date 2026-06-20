@@ -25,7 +25,6 @@ def _live_config() -> ChronicleConfig:
     return ChronicleConfig(
         memwal_endpoint=memwal_endpoint,
         walrus_endpoint=walrus_endpoint,
-        memwal_api_key=os.getenv("CHRONICLE_LIVE_MEMWAL_API_KEY"),
         walrus_private_key=os.getenv("CHRONICLE_LIVE_WALRUS_PRIVATE_KEY"),
         session_id=os.getenv("CHRONICLE_LIVE_SESSION_ID", f"live-{uuid4().hex[:8]}"),
         artifacts_dir=os.getenv("CHRONICLE_LIVE_ARTIFACTS_DIR", "./artifacts"),

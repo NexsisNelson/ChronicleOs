@@ -16,7 +16,10 @@ class MemWalChatMessageHistory(BaseChatMessageHistory):
         endpoint: str,
         session_id: str,
         agent_id: str,
-        api_key: Optional[str] = None,
+        private_key: Optional[str] = None,
+        account_id: Optional[str] = None,
+        server_url: Optional[str] = None,
+        namespace: str = "default",
     ):
         """
         Initialize MemWal-backed message history.
@@ -25,14 +28,23 @@ class MemWalChatMessageHistory(BaseChatMessageHistory):
             endpoint: MemWal API endpoint
             session_id: Session identifier
             agent_id: Agent identifier
-            api_key: Optional API key
+            private_key: Optional hosted Walrus Memory delegate key
+            account_id: Optional hosted Walrus Memory account id
+            server_url: Optional hosted Walrus Memory relayer URL
+            namespace: Namespace to isolate chat history
         """
         from memwal_adapter.core.client import MemWalClient
 
         self.endpoint = endpoint
         self.session_id = session_id
         self.agent_id = agent_id
-        self.client = MemWalClient(endpoint, api_key)
+        self.client = MemWalClient(
+            endpoint,
+            private_key=private_key,
+            account_id=account_id,
+            server_url=server_url,
+            namespace=namespace,
+        )
         self.key = f"chat_history:{session_id}:{agent_id}"
 
     @property

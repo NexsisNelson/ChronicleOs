@@ -1,0 +1,29 @@
+{
+  "key": "audit:task-1",
+  "data": {
+    "task_id": "task-1",
+    "findings": [
+      {
+        "severity": "info",
+        "message": "Found 2 artifacts for review",
+        "artifact_name": null,
+        "suggested_action": ""
+      },
+      {
+        "severity": "info",
+        "message": "Architect decisions were loaded from MemWal context",
+        "artifact_name": null,
+        "suggested_action": "Review referenced decisions in the artifact metadata"
+      }
+    ],
+    "quality_score": 100,
+    "approved": true,
+    "feedback": "Quality review complete. Score: 100%. Status: \u2705 APPROVED",
+    "completed_at": "2026-06-20T11:37:52.492469"
+  },
+  "metadata": {},
+  "agent": "audit",
+  "timestamp": "2026-06-20T10:38:01.676193Z",
+  "saved_at": "2026-06-20T10:38:01.676193Z",
+  "proof": "local:audit%3Atask-1"
+}

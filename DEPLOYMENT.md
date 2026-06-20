@@ -9,7 +9,7 @@ It includes production Docker images for the dashboard, a containerized agents r
 - Node.js 20+
 - Docker Engine
 - Docker Compose
-- Walrus credentials and MemWal endpoint for Phase 2
+- Walrus credentials for storage and, for hosted Walrus Memory, `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL`
 
 ## Local Production Build
 
@@ -75,10 +75,9 @@ cp apps/agents/.env.testnet.example apps/agents/.env
 Set the real secrets in `apps/agents/.env`:
 
 - `WALRUS_PRIVATE_KEY=<your-sui-private-key>`
-- `MEMWAL_API_KEY=<your-memwal-api-key>`
 - `OPENAI_API_KEY=<your-openai-key>`
 
-If you need a hosted MemWal endpoint instead of the local container, update `MEMWAL_ENDPOINT` in `apps/agents/.env` and `NEXT_PUBLIC_MEMWAL_API` in `apps/dashboard/.env.local`.
+If you need hosted Walrus Memory instead of the local container, set `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL` in `apps/agents/.env`. Keep `MEMWAL_ENDPOINT` only for the local demo container path.
 
 ## Running the agents container
 
@@ -89,6 +88,9 @@ docker run --rm \
   -e WALRUS_ENDPOINT=https://walrus-devnet.sui.io \
   -e WALRUS_PRIVATE_KEY=<your-key> \
   -e MEMWAL_ENDPOINT=http://host.docker.internal:8000 \
+  -e MEMWAL_PRIVATE_KEY=<your-ed25519-delegate-private-key-hex> \
+  -e MEMWAL_ACCOUNT_ID=<your-walrus-memory-account-id> \
+  -e MEMWAL_SERVER_URL=https://relayer.staging.memwal.ai \
   -e OPENAI_API_KEY=<your-openai-key> \
   chronicle-agents \
   --task "Analyze the latest trends in decentralized storage"
@@ -144,6 +146,7 @@ This repository includes `.dockerignore` files at the root and inside each app t
 - The agents container is configured as a CLI runtime; it can be invoked with `--task` to run workflows.
 - The `packages/memwal-adapter` package now includes valid packaging metadata for editable installs and container builds.
 - The helper scripts in `scripts/` will create local `.env` files from the templates if they do not already exist.
+- The hosted Walrus Memory setup uses the relayer URL and delegate credentials shown in the Walrus docs; the repo keeps a separate local demo path for offline runs.
 
 ## Optional local services
 

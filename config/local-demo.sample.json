@@ -11,7 +11,9 @@
       "WALRUS_ENDPOINT": "",
       "MEMWAL_ENDPOINT": "",
       "WALRUS_PRIVATE_KEY": "",
-      "MEMWAL_API_KEY": "",
+      "MEMWAL_PRIVATE_KEY": "",
+      "MEMWAL_ACCOUNT_ID": "",
+      "MEMWAL_SERVER_URL": "",
       "OPENAI_API_KEY": "",
       "ANTHROPIC_API_KEY": "",
       "DEEPSEEK_API_KEY": "",
@@ -20,7 +22,7 @@
     },
     "dashboardEnv": {
       "NEXT_PUBLIC_WALRUS_GATEWAY": "http://localhost:3000/api/local-demo",
-      "NEXT_PUBLIC_MEMWAL_API": "http://localhost:3000/api/local-demo",
+      "NEXT_PUBLIC_MEMWAL_API": "/api/memwal",
       "NEXT_PUBLIC_LOCAL_DEMO": "1"
     }
   },

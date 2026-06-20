@@ -1,8 +1,8 @@
 """Configuration management for ChronicleOS agents."""
 
-import os
 from pathlib import Path
 from typing import Optional
+
 from pydantic_settings import BaseSettings
 
 
@@ -19,7 +19,9 @@ class ChronicleConfig(BaseSettings):
     
     # MemWal
     memwal_endpoint: str = "http://localhost:8000"
-    memwal_api_key: Optional[str] = None
+    memwal_private_key: Optional[str] = None
+    memwal_account_id: Optional[str] = None
+    memwal_server_url: Optional[str] = None
     
     # LLM
     openai_api_key: Optional[str] = None

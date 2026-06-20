@@ -23,6 +23,17 @@ npm run ready
 
 That single check confirms the dashboard health route, the agent readiness summary, and the seeded demo bundle are aligned.
 
+## Optional hosted Walrus Memory
+
+If you want to connect ChronicleOS to a hosted Walrus Memory relayer instead of the local demo service, set the SDK-style environment variables from the Walrus Memory getting-started guide:
+
+- `MEMWAL_PRIVATE_KEY`
+- `MEMWAL_ACCOUNT_ID`
+- `MEMWAL_SERVER_URL`
+
+Use `https://relayer.staging.memwal.ai` for staging or `https://relayer.memwal.ai` for production.
+Keep `MEMWAL_ENDPOINT=http://localhost:8000` for the built-in local demo path.
+
 ## Daily Workflow
 
 ```bash

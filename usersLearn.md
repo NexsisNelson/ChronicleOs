@@ -10,6 +10,7 @@ ChronicleOS now includes:
 - automatic local `.env` file creation with safe defaults
 - a local demo mode that works without live MemWal or Walrus services
 - a dashboard homepage with an onboarding checklist and direct navigation into memory, artifacts, and history
+- a dashboard Task Launcher that can submit a task and run the latest submission without copying commands
 - agent CLI helpers for listing sessions, resuming a session, reading a task from a file, and running offline demo mode
 - a local reset command for clearing demo data and starting over
 
@@ -42,6 +43,15 @@ Install these tools first:
 - Docker and Docker Compose if you want the containerized stack
 
 On Windows, PowerShell is the easiest shell for the setup commands.
+
+## Walrus Memory Setup
+
+ChronicleOS supports two MemWal modes:
+
+- local demo mode using `MEMWAL_ENDPOINT=http://localhost:8000`
+- hosted Walrus Memory using `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL`
+
+The hosted setup follows the Walrus Memory getting-started model, where the relayer URL is typically `https://relayer.staging.memwal.ai` for staging or `https://relayer.memwal.ai` for production.
 
 ## One-Time Setup
 
@@ -184,25 +194,25 @@ Use this when you want ChronicleOS to process a real prompt and write live workf
 
 Steps:
 
-1. Start the dashboard.
-2. Run the agent workflow with a task description.
-3. Add a session id if you want to track the run.
+1. Open the dashboard Task Launcher.
+2. Paste your task and choose a session id.
+3. Click `Submit and run latest task`.
 4. Wait for the Researcher, Architect, and Auditor phases to complete.
 5. Review the results in the dashboard memory, artifacts, and history pages.
 
 Windows PowerShell:
 
 ```powershell
-..\.venv\Scripts\python.exe apps\agents\main.py --task "Analyze the latest trends in decentralized storage" --session-id demo-1
+start http://localhost:3000/dashboard/tasks
 ```
 
 macOS / Linux:
 
 ```bash
-./.venv/bin/python apps/agents/main.py --task "Analyze the latest trends in decentralized storage" --session-id demo-1
+open http://localhost:3000/dashboard/tasks
 ```
 
-You can also use a task file:
+You can still use a task file directly when you want to launch from the terminal:
 
 Windows PowerShell:
 
@@ -256,6 +266,17 @@ macOS / Linux:
 ### Scenario 5: Inspect a memory entry directly
 
 Use this when you want to read one MemWal entry and see exactly what the agents stored.
+
+### Scenario 6: Connect to hosted Walrus Memory
+
+Use this when you want ChronicleOS to target the hosted Walrus Memory relayer instead of the local demo endpoint.
+
+Steps:
+
+1. Set `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL` in `apps/agents/.env`.
+2. Leave `MEMWAL_ENDPOINT` pointed at the local demo service only if you still want the offline fallback.
+3. Use the staging relayer URL while testing, then switch to production when you are ready.
+4. Run your workflow and verify memory writes through the dashboard and readiness checks.
 
 Steps:
 
@@ -321,12 +342,12 @@ macOS / Linux:
 
 ### Scenario 9: Use a task from a file
 
-Use this when you want to keep a long or reusable task in a text file instead of the shell command line.
+Use this when you want to keep a long or reusable task in a text file instead of typing into the dashboard.
 
 Steps:
 
-1. Create a text file with one task description.
-2. Run the agent CLI with `--task-file`.
+1. Create a text file with one task description, or paste the task into the Task Launcher and use the download button.
+2. Run the agent CLI with `--task-file`, or submit the task in the dashboard and click `Run latest`.
 3. Add `--session-id` if you want the run tracked as a named session.
 4. Check the dashboard after the workflow completes.
 
@@ -392,7 +413,7 @@ The dashboard is where you inspect the result:
 The simplest recurring flow is:
 
 1. Start the dashboard
-2. Run either `--local-demo` or a real `--task`
+2. Use the Task Launcher for real tasks, or `--local-demo` for seeded sample data
 3. Wait for the workflow to finish
 4. Inspect memory, artifacts, and history
 5. Use `--resume` or `--task-file` when needed

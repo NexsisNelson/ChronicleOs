@@ -49,7 +49,9 @@ src/
 
 ## Environment Variables
 
-See `.env.example` for required settings.
+See `.env.example` for the local demo path and optional hosted Walrus Memory settings.
+
+Hosted Walrus Memory uses `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL`; the local demo path uses `MEMWAL_ENDPOINT=http://localhost:8000`.
 
 ## Using the Project
 
