@@ -2,8 +2,8 @@
   "key": "workflow:task-1:checkpoint",
   "data": {
     "task_id": "task-1",
-    "task_description": "Research the latest ChronicleOS workflow improvements and summarize the best next step for users.",
-    "checkpoint_stage": "complete",
+    "task_description": "where is niger",
+    "checkpoint_stage": "research",
     "research": {
       "task_id": "task-1",
       "sources": [
@@ -11,93 +11,43 @@
           "title": "Research Source 1",
           "url": "https://example.com/source1",
           "content": "Sample research content for source 1",
-          "timestamp": "2026-06-21T01:28:03.703008"
+          "timestamp": "2026-06-21T01:50:34.096306"
         },
         {
           "title": "Research Source 2",
           "url": "https://example.com/source2",
           "content": "Sample research content for source 2",
-          "timestamp": "2026-06-21T01:28:03.703038"
+          "timestamp": "2026-06-21T01:50:34.096315"
         },
         {
           "title": "Research Source 3",
           "url": "https://example.com/source3",
           "content": "Sample research content for source 3",
-          "timestamp": "2026-06-21T01:28:03.703050"
+          "timestamp": "2026-06-21T01:50:34.096318"
         }
       ],
       "raw_data": {
-        "query": "Research the latest ChronicleOS workflow improvements and summarize the best next step for users.",
+        "query": "where is niger",
         "total_sources": 3,
-        "processed_at": "2026-06-21T01:28:13.714701"
+        "processed_at": "2026-06-21T01:50:42.206530"
       },
       "walrus_cids": [
-        "QEn5R9J3rHh01TpVvaGpkBP9NMmpfi4_KZAu1IbM6Wc"
+        "ALptjRkwvAIBJzmOqT3VkrdWldrqceNsnobzxpIpuLg"
       ],
-      "summary": "Researched: Research the latest ChronicleOS workflow improvements and summarize the best next step for users.. Found 3 relevant sources.",
+      "summary": "Researched: where is niger. Found 3 relevant sources.",
       "confidence": 0.75,
-      "completed_at": "2026-06-21T01:28:13.714739"
+      "completed_at": "2026-06-21T01:50:42.206552"
     },
-    "architecture": {
-      "task_id": "task-1",
-      "artifacts": [
-        {
-          "name": "research_summary.md",
-          "type": "report",
-          "content": "# Research Summary\n\nResearched: Research the latest ChronicleOS workflow improvements and summarize the best next step for users.. Found 3 relevant sources.\n\nSources: 3",
-          "walrus_cid": "n7TRM29wCP394xtv1ieyj93ZR9acZLxj83-Mb-INuK0",
-          "metadata": {
-            "format": "markdown",
-            "research_task_id": "task-1"
-          }
-        },
-        {
-          "name": "data_export.json",
-          "type": "dataset",
-          "content": "{\n  \"sources\": [\n    {\n      \"title\": \"Research Source 1\",\n      \"url\": \"https://example.com/source1\",\n      \"content\": \"Sample research content for source 1\",\n      \"timestamp\": \"2026-06-21T01:28:03.703008\"\n    },\n    {\n      \"title\": \"Research Source 2\",\n      \"url\": \"https://example.com/source2\",\n      \"content\": \"Sample research content for source 2\",\n      \"timestamp\": \"2026-06-21T01:28:03.703038\"\n    },\n    {\n      \"title\": \"Research Source 3\",\n      \"url\": \"https://example.com/source3\",\n      \"content\": \"Sample research content for source 3\",\n      \"timestamp\": \"2026-06-21T01:28:03.703050\"\n    }\n  ]\n}",
-          "walrus_cid": "nb2sTp63dT5BE8GpFTLhlJoT_4CEKXVYiZxGoMa09fk",
-          "metadata": {
-            "format": "json",
-            "total_records": 3
-          }
-        }
-      ],
-      "synthesis_notes": "Synthesized 3 sources into 2 artifacts.",
-      "decisions": [
-        "Chose markdown format for the summary for human readability.",
-        "Exported research sources as JSON for structured downstream processing."
-      ],
-      "completed_at": "2026-06-21T01:30:07.618328"
-    },
-    "audit": {
-      "task_id": "task-1",
-      "findings": [
-        {
-          "severity": "info",
-          "message": "Found 2 artifacts for review",
-          "artifact_name": null,
-          "suggested_action": ""
-        },
-        {
-          "severity": "info",
-          "message": "Architect decisions were loaded from MemWal context",
-          "artifact_name": null,
-          "suggested_action": "Review referenced decisions in the artifact metadata"
-        }
-      ],
-      "quality_score": 100,
-      "approved": true,
-      "feedback": "Quality review complete. Score: 100%. Status: \u2705 APPROVED",
-      "completed_at": "2026-06-21T01:31:10.524860"
-    },
-    "created_at": "2026-06-21T01:31:10.525391",
+    "architecture": null,
+    "audit": null,
+    "created_at": "2026-06-21T01:51:10.595015",
     "completed_at": null
   },
   "metadata": {
     "kind": "workflow_checkpoint"
   },
   "agent": "workflow",
-  "timestamp": "2026-06-21T00:31:10.525920Z",
-  "saved_at": "2026-06-21T00:31:10.525920Z",
+  "timestamp": "2026-06-21T00:51:10.595442Z",
+  "saved_at": "2026-06-21T00:51:10.595442Z",
   "proof": "local:workflow%3Atask-1%3Acheckpoint"
 }
