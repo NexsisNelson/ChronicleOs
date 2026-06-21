@@ -58,9 +58,9 @@ On Windows PowerShell, use `Copy-Item .env.example .env.local`.
 
 Copy `apps/agents/.env.example` to `apps/agents/.env` and set:
 
-- `WALRUS_ENDPOINT`
+- `WALRUS_PUBLISHER_ENDPOINT`
+- `WALRUS_AGGREGATOR_ENDPOINT`
 - `MEMWAL_ENDPOINT`
-- `WALRUS_PRIVATE_KEY`
 - `MEMWAL_PRIVATE_KEY` if you are connecting to hosted Walrus Memory
 - `MEMWAL_ACCOUNT_ID` if you are connecting to hosted Walrus Memory
 - `MEMWAL_SERVER_URL` if you are connecting to hosted Walrus Memory

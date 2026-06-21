@@ -100,6 +100,8 @@ async def collect_status_report(local_demo: bool = False) -> Dict[str, Any]:
     config = load_config()
     if local_demo:
         config.walrus_endpoint = ""
+        config.walrus_publisher_endpoint = ""
+        config.walrus_aggregator_endpoint = ""
         config.memwal_endpoint = ""
         set_config(config)
 
@@ -120,7 +122,7 @@ async def collect_status_report(local_demo: bool = False) -> Dict[str, Any]:
         "dashboard_health": dashboard_health,
         "local_demo_health": local_demo_health,
         "memwal_mode": "local-demo" if not config.memwal_endpoint else "remote",
-        "walrus_mode": "local-demo" if not config.walrus_endpoint else "remote",
+        "walrus_mode": "local-demo" if not (getattr(config, "walrus_publisher_endpoint", None) or getattr(config, "walrus_endpoint", None)) else "remote",
         "seeded_demo": seeded_demo,
         "demo_session_id": demo_session_id,
         "demo_task": demo_task,
@@ -189,6 +191,8 @@ async def run_workflow(
 
     if local_demo:
         config.walrus_endpoint = ""
+        config.walrus_publisher_endpoint = ""
+        config.walrus_aggregator_endpoint = ""
         config.memwal_endpoint = ""
         set_config(config)
 

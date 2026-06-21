@@ -23,7 +23,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 Create `.env.local`:
 
 ```
-NEXT_PUBLIC_WALRUS_GATEWAY=https://walrus-testnet-gateway.sui.io
+NEXT_PUBLIC_WALRUS_AGGREGATOR_ENDPOINT=https://aggregator.walrus-testnet.walrus.space
 NEXT_PUBLIC_MEMWAL_API=/api/memwal
 NEXT_PUBLIC_LOG_LEVEL=info
 ```

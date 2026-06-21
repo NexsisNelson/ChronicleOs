@@ -1,17 +1,17 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Check, Copy, Download, Sparkles, TerminalSquare, Wand2 } from 'lucide-react'
+import { Check, Copy, Download, Sparkles, TerminalSquare } from 'lucide-react'
 
 const defaultTask = 'Research the latest ChronicleOS workflow improvements and summarize the best next step for users.'
 const defaultSessionId = 'task-1'
 
 function escapePowerShellArgument(value: string) {
-  return `"${value.replaceAll('"', '`"')}"`
+  return `"${value.split('"').join('`"')}"`
 }
 
 function escapeBashArgument(value: string) {
-  return `"${value.replaceAll('"', '\\"')}"`
+  return `"${value.split('"').join('\\"')}"`
 }
 
 export default function TaskLauncherPage() {

@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Activity, ArrowRight, CheckCircle2, Database, Layers3, MessageSquarePlus, ShieldCheck, Sparkles } from 'lucide-react'
+import { Activity, CheckCircle2, Database, Layers3, MessageSquarePlus, ShieldCheck, Sparkles } from 'lucide-react'
 import { MemWalClient } from '@/lib/api/memwal-client'
 import { WalrusClient } from '@/lib/api/walrus-client'
-import { demoSessionId } from '@/lib/local-demo-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +13,7 @@ const walrusClient = new WalrusClient()
 
 export default function DashboardHome() {
   const [memwalStatus, setMemwalStatus] = useState('Checking MemWal connection...')
-  const [walrusStatus, setWalrusStatus] = useState('Checking Walrus gateway...')
+  const [walrusStatus, setWalrusStatus] = useState('Checking Walrus aggregator...')
   const [statusLoading, setStatusLoading] = useState(true)
 
   useEffect(() => {
@@ -83,10 +82,10 @@ export default function DashboardHome() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/dashboard/memory?key=research:${demoSessionId}`}
+                href="/dashboard/memory"
                 className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
               >
-                Open demo memory
+                Open memory timeline
               </Link>
               <Link
                 href="/dashboard/tasks"
@@ -160,15 +159,15 @@ export default function DashboardHome() {
         <div className="grid gap-4 lg:grid-cols-2">
           <ChecklistItem
             title="1. Bootstrap the workspace"
-            description="Run the single bootstrap command to create env files, install dependencies, and prepare local demo data."
+            description="Run the single bootstrap command to create env files and install dependencies."
             href="/docs/START_HERE.md"
             actionLabel="Open setup guide"
           />
           <ChecklistItem
-            title="2. Start local demo mode"
-            description="Use the local demo routes and seeded data when you want a no-secrets, offline walkthrough."
+            title="2. Launch a real task"
+            description="Use the Task Launcher to submit a workflow that will persist real memory and artifact results."
             href={`/dashboard/history`}
-            actionLabel="Inspect demo run"
+            actionLabel="Open history"
           />
           <ChecklistItem
             title="3. Run a real workflow"

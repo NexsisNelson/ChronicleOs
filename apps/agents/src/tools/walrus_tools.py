@@ -25,6 +25,17 @@ def _walrus_url(endpoint: str, path_template: str, cid: Optional[str] = None) ->
     return f"{endpoint.rstrip('/')}/{path.lstrip('/')}"
 
 
+def _resolve_walrus_endpoint(config, attribute_name: str) -> Optional[str]:
+    value = getattr(config, attribute_name, None)
+    if value:
+        return value
+    if attribute_name != "walrus_endpoint":
+        legacy_value = getattr(config, "walrus_endpoint", None)
+        if legacy_value:
+            return legacy_value
+    return None
+
+
 def _local_fallback_path(filename: Optional[str]) -> Path:
     # Use local artifact storage when Walrus is unavailable.
     local_dir = _local_artifacts_dir()
@@ -43,36 +54,24 @@ async def upload_to_walrus(
     and returns a fallback local reference.
     """
     config = get_config()
-    if not config.walrus_endpoint:
+    publisher_endpoint = _resolve_walrus_endpoint(config, "walrus_publisher_endpoint")
+    if not publisher_endpoint:
         logger.warning("Walrus endpoint not configured, falling back to local artifact storage")
         return save_local_walrus_blob(filename or "artifact.bin", data, content_type)
 
-    upload_url = _walrus_url(config.walrus_endpoint, config.walrus_upload_path)
+    upload_url = _walrus_url(publisher_endpoint, config.walrus_upload_path)
     async with httpx.AsyncClient(timeout=60.0) as client:
-        files = {
-            "file": (
-                filename or "artifact.bin",
-                data,
-                content_type,
-            )
-        }
-        last_error = None
-        for attempt in range(1, 4):
-            try:
-                response = await client.post(upload_url, files=files)
-                response.raise_for_status()
-                payload = response.json()
-                cid = _extract_cid(payload)
-                if not cid:
-                    raise ValueError("Walrus upload succeeded but no CID was returned")
-                return cid
-            except Exception as exc:
-                last_error = exc
-                logger.warning("Walrus upload attempt %s failed: %s", attempt, exc)
-                if attempt < 3:
-                    await _delay_retry(attempt)
-        logger.warning("Walrus upload failed after retries, writing locally instead: %s", last_error)
-        return save_local_walrus_blob(filename or "artifact.bin", data, content_type)
+        response = await client.put(
+            upload_url,
+            content=data,
+            headers={"Content-Type": content_type or "application/octet-stream"},
+        )
+        response.raise_for_status()
+        payload = response.json()
+        cid = _extract_cid(payload)
+        if not cid:
+            raise ValueError("Walrus upload succeeded but no blob identifier was returned")
+        return cid
 
 
 async def download_from_walrus(cid: str) -> bytes:
@@ -88,10 +87,11 @@ async def download_from_walrus(cid: str) -> bytes:
         return read_local_walrus_blob(cid)
 
     config = get_config()
-    if not config.walrus_endpoint:
+    aggregator_endpoint = _resolve_walrus_endpoint(config, "walrus_aggregator_endpoint")
+    if not aggregator_endpoint:
         raise ValueError("Walrus endpoint is not configured")
 
-    download_url = _walrus_url(config.walrus_endpoint, config.walrus_download_path, cid=cid)
+    download_url = _walrus_url(aggregator_endpoint, config.walrus_download_path, cid=cid)
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.get(download_url)
         response.raise_for_status()
@@ -107,16 +107,30 @@ def _extract_cid(payload: dict) -> Optional[str]:
     if payload is None:
         return None
     if isinstance(payload, dict):
-        return payload.get("cid") or payload.get("id") or payload.get("hash") or payload.get("data", {}).get("cid")
+        return (
+            payload.get("cid")
+            or payload.get("blob_id")
+            or payload.get("blobId")
+            or payload.get("id")
+            or payload.get("hash")
+            or payload.get("data", {}).get("cid")
+            or payload.get("data", {}).get("blobId")
+            or payload.get("newlyCreated", {}).get("blobObject", {}).get("blobId")
+            or payload.get("alreadyCertified", {}).get("blobId")
+        )
     return None
 
 
 async def list_walrus_objects() -> list:
     """List stored artifacts when remote listing is unavailable.
 
-    This currently returns locally cached artifact filenames. Remote Walrus listing
-    is not implemented because Walrus gateway APIs vary by deployment.
+    Remote Walrus listing is not implemented because the public HTTP APIs expose
+    blob reads, not a stable object listing endpoint.
     """
+    config = get_config()
+    if _resolve_walrus_endpoint(config, "walrus_publisher_endpoint") or _resolve_walrus_endpoint(config, "walrus_aggregator_endpoint"):
+        return []
+
     local_dir = _local_artifacts_dir()
     if not local_dir.exists():
         return []

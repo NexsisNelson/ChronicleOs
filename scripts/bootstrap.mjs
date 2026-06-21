@@ -1,9 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { dirname, resolve } from 'path'
 import { spawnSync } from 'child_process'
-import { dashboardBundlePath, loadLocalDemoBundle, rootDir } from './local-demo-bundle.mjs'
+import { fileURLToPath } from 'url'
 
-const localDemoDataPath = resolve(rootDir, 'apps', 'dashboard', 'src', 'lib', 'local-demo-data.json')
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const systemPython = process.platform === 'win32' ? 'python' : 'python3'
 const npmInstallCommand = process.platform === 'win32' ? 'cmd' : 'npm'
 const npmInstallArgs = process.platform === 'win32' ? ['/c', 'npm', 'install'] : ['install']
@@ -91,10 +91,6 @@ function ensureMinimumVersion(command, minimum, label) {
   }
 }
 
-function loadSampleBundle() {
-  return loadLocalDemoBundle()
-}
-
 function ensureFile(filePath, content) {
   if (existsSync(filePath)) {
     return false
@@ -110,87 +106,43 @@ function ensureDirectory(directoryPath) {
 }
 
 function envTemplate() {
-  const bundle = loadSampleBundle()
-  const values = bundle?.bootstrap?.agentEnv ?? {
-    WALRUS_ENDPOINT: '',
-    MEMWAL_ENDPOINT: '',
-    WALRUS_PRIVATE_KEY: '',
+  const values = {
+    WALRUS_ENDPOINT: 'https://publisher.walrus-testnet.walrus.space',
+    WALRUS_PUBLISHER_ENDPOINT: 'https://publisher.walrus-testnet.walrus.space',
+    WALRUS_AGGREGATOR_ENDPOINT: 'https://aggregator.walrus-testnet.walrus.space',
+    WALRUS_UPLOAD_PATH: '/v1/blobs',
+    WALRUS_DOWNLOAD_PATH: '/v1/blobs/{cid}',
+    WALRUS_METADATA_PATH: '/v1/blobs/{cid}/metadata',
+    MEMWAL_ENDPOINT: 'http://localhost:8000',
     MEMWAL_PRIVATE_KEY: '',
     MEMWAL_ACCOUNT_ID: '',
     MEMWAL_SERVER_URL: '',
+    MEMWAL_NAMESPACE: 'agents',
     OPENAI_API_KEY: '',
     ANTHROPIC_API_KEY: '',
     DEEPSEEK_API_KEY: '',
     LOG_LEVEL: 'INFO',
-    LOCAL_DEMO: '1',
   }
 
   return Object.entries(values).map(([key, value]) => `${key}=${value}`).join('\n') + '\n'
 }
 
 function dashboardEnvTemplate() {
-  const bundle = loadSampleBundle()
-  const values = bundle?.bootstrap?.dashboardEnv ?? {
-    NEXT_PUBLIC_WALRUS_GATEWAY: 'http://localhost:3000/api/local-demo',
+  const values = {
     NEXT_PUBLIC_MEMWAL_API: '/api/memwal',
-    NEXT_PUBLIC_LOCAL_DEMO: '1',
   }
 
   return Object.entries(values).map(([key, value]) => `${key}=${value}`).join('\n') + '\n'
 }
 
-function seedLocalDemoFiles() {
-  if (!existsSync(localDemoDataPath)) {
-    return
-  }
-
-  const bundle = JSON.parse(readFileSync(localDemoDataPath, 'utf8'))
-  const memwalDir = resolve(rootDir, 'memwal_data')
-  const walrusDir = resolve(rootDir, 'walrus_data', 'blobs')
-
-  ensureDirectory(memwalDir)
-  ensureDirectory(walrusDir)
-
-  for (const entry of bundle.demoMemoryEntries ?? []) {
-    const filePath = resolve(memwalDir, `${entry.key}.json`.replaceAll(':', '%3A'))
-    if (!existsSync(filePath)) {
-      writeFileSync(filePath, JSON.stringify(entry, null, 2), 'utf8')
-    }
-  }
-
-  for (const artifact of bundle.demoArtifacts ?? []) {
-    const blobName = artifact.cid.replace('local://', '')
-    const blobPath = resolve(walrusDir, blobName)
-    const metadataPath = resolve(walrusDir, `${blobName}.meta.json`)
-    if (!existsSync(blobPath)) {
-      writeFileSync(blobPath, artifact.content, 'utf8')
-    }
-    if (!existsSync(metadataPath)) {
-      writeFileSync(metadataPath, JSON.stringify({
-        cid: artifact.cid,
-        name: artifact.name,
-        size: artifact.size,
-        mimeType: artifact.mimeType,
-        createdAt: artifact.createdAt,
-      }, null, 2), 'utf8')
-    }
-  }
-}
-
 function main() {
   console.log('ChronicleOS bootstrap starting...')
 
-  const bundle = loadSampleBundle()
-  const preflight = bundle.preflight ?? {}
-  const nodeVersion = ensureCommandVersion('node', ['--version'], 'Node.js', { major: preflight.nodeMajor ?? 20, minor: 0 }, 'Node.js is required. Install Node.js and rerun `npm run bootstrap`.')
-  const npmVersion = ensureCommandVersion(npmProbeCommand, npmProbeArgs, 'npm', { major: preflight.npmMajor ?? 8, minor: preflight.npmMinor ?? 19 }, 'npm is required. Install Node.js and rerun `npm run bootstrap`.')
-  const pythonVersion = ensureCommandVersion(systemPython, ['--version'], 'Python', { major: preflight.pythonMajor ?? 3, minor: preflight.pythonMinor ?? 10 }, 'Python is required. Install Python and rerun `npm run bootstrap`.')
+  const nodeVersion = ensureCommandVersion('node', ['--version'], 'Node.js', { major: 20, minor: 0 }, 'Node.js is required. Install Node.js and rerun `npm run bootstrap`.')
+  const npmVersion = ensureCommandVersion(npmProbeCommand, npmProbeArgs, 'npm', { major: 8, minor: 19 }, 'npm is required. Install Node.js and rerun `npm run bootstrap`.')
+  const pythonVersion = ensureCommandVersion(systemPython, ['--version'], 'Python', { major: 3, minor: 10 }, 'Python is required. Install Python and rerun `npm run bootstrap`.')
 
   console.log(`Preflight checks passed: Node.js ${nodeVersion.major}.${nodeVersion.minor}.${nodeVersion.patch}, npm ${npmVersion.major}.${npmVersion.minor}.${npmVersion.patch}, Python ${pythonVersion.major}.${pythonVersion.minor}.${pythonVersion.patch}`)
-  if (!existsSync(dashboardBundlePath)) {
-    console.log('Using fallback local demo bundle until dashboard sample data is available.')
-  }
-
   const createdAgentEnv = ensureFile(resolve(rootDir, 'apps', 'agents', '.env'), envTemplate())
   const createdDashboardEnv = ensureFile(resolve(rootDir, 'apps', 'dashboard', '.env.local'), dashboardEnvTemplate())
 
@@ -204,10 +156,8 @@ function main() {
     console.log('Created apps/agents/.env with safe local defaults.')
   }
   if (createdDashboardEnv) {
-    console.log('Created apps/dashboard/.env.local with local demo endpoints.')
+    console.log('Created apps/dashboard/.env.local with dashboard defaults.')
   }
-
-  seedLocalDemoFiles()
 
   if (!existsSync(resolve(rootDir, '.venv'))) {
     run(systemPython, ['-m', 'venv', '.venv'], 'Failed to create the Python virtual environment. Check that Python is installed and available on PATH.')
@@ -221,8 +171,7 @@ function main() {
   console.log('Bootstrap complete.')
   console.log('Next steps:')
   console.log('  1. Run `npm run dev` to start the workspace.')
-  console.log('  2. Run `npm run ready` to confirm dashboard, agent, and local demo readiness.')
-  console.log('  3. Run `npm run reset:local` to clear local demo data when needed.')
+  console.log('  2. Open the dashboard and submit a task from the Task Launcher.')
 }
 
 try {

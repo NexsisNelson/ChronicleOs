@@ -1,14 +1,20 @@
 'use client'
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MemWalClient } from '@/lib/api/memwal-client'
-import { demoMemoryEntries } from '@/lib/local-demo-data'
 
 const client = new MemWalClient()
 
 export default function MemoryPage() {
+  return (
+    <Suspense fallback={<div className="surface rounded-[28px] p-6 text-sm text-slate-400">Loading memory explorer...</div>}>
+      <MemoryPageContent />
+    </Suspense>
+  )
+}
+
+function MemoryPageContent() {
   const [key, setKey] = useState('')
   const [entries, setEntries] = useState<Awaited<ReturnType<MemWalClient['getMemory']>> | null>(null)
   const [keys, setKeys] = useState<string[]>([])
@@ -87,17 +93,6 @@ export default function MemoryPage() {
             >
               Load Entry
             </button>
-            <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
-              {demoMemoryEntries.map((entry) => (
-                <Link
-                  key={entry.key}
-                  href={`/dashboard/memory?key=${encodeURIComponent(entry.key)}`}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 transition hover:border-teal-400/30 hover:bg-teal-400/10 hover:text-white"
-                >
-                  {entry.key}
-                </Link>
-              ))}
-            </div>
           </div>
 
           <div className="surface rounded-[28px] p-6">
@@ -134,7 +129,7 @@ export default function MemoryPage() {
               </pre>
             ) : (
               <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-6 text-sm leading-6 text-slate-400">
-                No memory entry loaded yet. Try one of the demo keys above or paste a session key from the history page.
+                No memory entry loaded yet. Paste a session key from the history page or use a research, architect, or audit key from a completed run.
               </div>
             )}
           </div>

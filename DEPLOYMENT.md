@@ -74,7 +74,6 @@ cp apps/agents/.env.testnet.example apps/agents/.env
 
 Set the real secrets in `apps/agents/.env`:
 
-- `WALRUS_PRIVATE_KEY=<your-sui-private-key>`
 - `OPENAI_API_KEY=<your-openai-key>`
 
 If you need hosted Walrus Memory instead of the local container, set `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL` in `apps/agents/.env`. Keep `MEMWAL_ENDPOINT` only for the local demo container path.
@@ -86,11 +85,10 @@ Use the agents image as a task runner with environment variables for deployment.
 ```bash
 docker run --rm \
   -e WALRUS_ENDPOINT=https://walrus-devnet.sui.io \
-  -e WALRUS_PRIVATE_KEY=<your-key> \
   -e MEMWAL_ENDPOINT=http://host.docker.internal:8000 \
   -e MEMWAL_PRIVATE_KEY=<your-ed25519-delegate-private-key-hex> \
   -e MEMWAL_ACCOUNT_ID=<your-walrus-memory-account-id> \
-  -e MEMWAL_SERVER_URL=https://relayer.staging.memwal.ai \
+  -e MEMWAL_SERVER_URL=https://relayer-staging.memory.walrus.xyz \
   -e OPENAI_API_KEY=<your-openai-key> \
   chronicle-agents \
   --task "Analyze the latest trends in decentralized storage"
@@ -158,6 +156,6 @@ docker-compose -f docker-compose.prod.yml up
 
 ## Security considerations
 
-- Keep `WALRUS_PRIVATE_KEY` and API keys in secrets management, not in source control.
+- Keep your Sui and API keys in secrets management, not in source control.
 - Use HTTPS for the dashboard in production.
 - Use environment-specific credentials and separate staging from production.

@@ -38,6 +38,7 @@ async def save_to_memwal(
         private_key=config.memwal_private_key,
         account_id=config.memwal_account_id,
         server_url=config.memwal_server_url,
+        namespace=config.memwal_namespace,
     ) as client:
         try:
             result = await client.save_memory(key, data, metadata)
@@ -69,6 +70,7 @@ async def read_from_memwal(key: str) -> Dict[str, Any]:
         private_key=config.memwal_private_key,
         account_id=config.memwal_account_id,
         server_url=config.memwal_server_url,
+        namespace=config.memwal_namespace,
     ) as client:
         try:
             result = await client.read_memory(key)

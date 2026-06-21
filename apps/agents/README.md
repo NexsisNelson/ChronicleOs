@@ -11,6 +11,7 @@ source venv/bin/activate  # or `venv\Scripts\activate` on Windows
 
 # Install dependencies
 pip install -r requirements.txt
+pip install -e ../../packages/memwal-adapter
 
 # Copy environment template
 cp .env.example .env
@@ -52,6 +53,8 @@ src/
 See `.env.example` for the local demo path and optional hosted Walrus Memory settings.
 
 Hosted Walrus Memory uses `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL`; the local demo path uses `MEMWAL_ENDPOINT=http://localhost:8000`.
+
+Walrus uploads use a hosted publisher endpoint and reads use a hosted aggregator endpoint. Set `WALRUS_PUBLISHER_ENDPOINT` to a publisher such as `https://publisher.walrus-testnet.walrus.space` and `WALRUS_AGGREGATOR_ENDPOINT` to an aggregator such as `https://aggregator.walrus-testnet.walrus.space`.
 
 ## Using the Project
 

@@ -6,7 +6,7 @@
       {
         "name": "research_summary.md",
         "type": "report",
-        "walrus_cid": "local://research_summary.md",
+        "walrus_cid": "n7TRM29wCP394xtv1ieyj93ZR9acZLxj83-Mb-INuK0",
         "metadata": {
           "format": "markdown",
           "research_task_id": "task-1"
@@ -15,7 +15,7 @@
       {
         "name": "data_export.json",
         "type": "dataset",
-        "walrus_cid": "local://data_export.json",
+        "walrus_cid": "nb2sTp63dT5BE8GpFTLhlJoT_4CEKXVYiZxGoMa09fk",
         "metadata": {
           "format": "json",
           "total_records": 3
@@ -27,11 +27,11 @@
       "Chose markdown format for the summary for human readability.",
       "Exported research sources as JSON for structured downstream processing."
     ],
-    "created_at": "2026-06-20T11:37:25.210622"
+    "created_at": "2026-06-21T01:29:34.647505"
   },
   "metadata": {},
   "agent": "architect",
-  "timestamp": "2026-06-20T10:37:34.292196Z",
-  "saved_at": "2026-06-20T10:37:34.292196Z",
+  "timestamp": "2026-06-21T00:29:34.647608Z",
+  "saved_at": "2026-06-21T00:29:34.647608Z",
   "proof": "local:architect%3Atask-1"
 }

@@ -18,14 +18,17 @@ def _live_test_enabled() -> bool:
 
 def _live_config() -> ChronicleConfig:
     memwal_endpoint = os.getenv("CHRONICLE_LIVE_MEMWAL_ENDPOINT")
+    walrus_publisher_endpoint = os.getenv("CHRONICLE_LIVE_WALRUS_PUBLISHER_ENDPOINT")
+    walrus_aggregator_endpoint = os.getenv("CHRONICLE_LIVE_WALRUS_AGGREGATOR_ENDPOINT")
     walrus_endpoint = os.getenv("CHRONICLE_LIVE_WALRUS_ENDPOINT")
-    if not memwal_endpoint or not walrus_endpoint:
+    if not memwal_endpoint or not (walrus_publisher_endpoint or walrus_endpoint) or not (walrus_aggregator_endpoint or walrus_endpoint):
         pytest.skip("Live integration endpoints are not configured")
 
     return ChronicleConfig(
         memwal_endpoint=memwal_endpoint,
+        walrus_publisher_endpoint=walrus_publisher_endpoint,
+        walrus_aggregator_endpoint=walrus_aggregator_endpoint,
         walrus_endpoint=walrus_endpoint,
-        walrus_private_key=os.getenv("CHRONICLE_LIVE_WALRUS_PRIVATE_KEY"),
         session_id=os.getenv("CHRONICLE_LIVE_SESSION_ID", f"live-{uuid4().hex[:8]}"),
         artifacts_dir=os.getenv("CHRONICLE_LIVE_ARTIFACTS_DIR", "./artifacts"),
     )

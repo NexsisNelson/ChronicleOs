@@ -163,10 +163,9 @@ approval = auditor.review(artifact)
 ```
 WALRUS_ENDPOINT=https://walrus-devnet.sui.io
 MEMWAL_ENDPOINT=http://localhost:8000
-WALRUS_PRIVATE_KEY=<your-sui-private-key>
 MEMWAL_PRIVATE_KEY=<your-ed25519-delegate-private-key-hex>
 MEMWAL_ACCOUNT_ID=<your-walrus-memory-account-id>
-MEMWAL_SERVER_URL=https://relayer.staging.memwal.ai
+MEMWAL_SERVER_URL=https://relayer-staging.memory.walrus.xyz
 OPENAI_API_KEY=<your-api-key>
 LOG_LEVEL=INFO
 ```
@@ -175,6 +174,7 @@ LOG_LEVEL=INFO
 ```
 NEXT_PUBLIC_WALRUS_GATEWAY=https://walrus-testnet-gateway.sui.io
 NEXT_PUBLIC_MEMWAL_API=/api/memwal
+MEMWAL_NAMESPACE=dashboard
 ```
 
 ## 📚 Documentation

@@ -63,7 +63,10 @@ export default function AgentsPage() {
             <InfoBlock label="MemWal status" value={memwalStatus} />
             <InfoBlock label="MemWal health" value={memwalHealth ?? (loading ? 'Checking…' : 'Unknown')} />
             <InfoBlock label="Stored MemWal entries" value={loading ? 'Loading…' : memwalCount !== null ? String(memwalCount) : 'Unknown'} />
-            <InfoBlock label="Walrus gateway" value={process.env.NEXT_PUBLIC_WALRUS_GATEWAY || 'Not configured'} />
+            <InfoBlock
+              label="Walrus aggregator"
+              value={process.env.NEXT_PUBLIC_WALRUS_AGGREGATOR_ENDPOINT || process.env.NEXT_PUBLIC_WALRUS_GATEWAY || 'Not configured'}
+            />
           </div>
           {error && (
             <div className="mt-6 rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">

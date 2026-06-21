@@ -44,7 +44,7 @@ class MemWalClient:
         self.server_url = (
             server_url
             or (
-                "https://relayer.memwal.ai"
+                "https://relayer.memory.walrus.xyz"
                 if private_key and account_id and MemWal is not None
                 else endpoint
             )

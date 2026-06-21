@@ -1,14 +1,20 @@
 'use client'
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { WalrusClient, WalrusObject } from '@/lib/api/walrus-client'
-import { demoArtifacts } from '@/lib/local-demo-data'
 
 const client = new WalrusClient()
 
 export default function ArtifactsPage() {
+  return (
+    <Suspense fallback={<div className="surface rounded-[28px] p-6 text-sm text-slate-400">Loading artifact explorer...</div>}>
+      <ArtifactsPageContent />
+    </Suspense>
+  )
+}
+
+function ArtifactsPageContent() {
   const [cid, setCid] = useState('')
   const [metadata, setMetadata] = useState<WalrusObject | null>(null)
   const [content, setContent] = useState<string | null>(null)
@@ -75,17 +81,6 @@ export default function ArtifactsPage() {
             >
               Load Artifact
             </button>
-            <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
-              {demoArtifacts.map((artifact) => (
-                <Link
-                  key={artifact.cid}
-                  href={`/dashboard/artifacts?cid=${encodeURIComponent(artifact.cid)}`}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
-                >
-                  {artifact.name}
-                </Link>
-              ))}
-            </div>
           </div>
 
           {error && (
@@ -110,7 +105,7 @@ export default function ArtifactsPage() {
             ) : (
               <div className="space-y-3 text-slate-500">
                 <p>Enter a CID and click Load Artifact to preview a text artifact from Walrus.</p>
-                <p>If you are just getting started, use one of the seeded demo artifacts above.</p>
+                <p>Use a CID from the history page after a task has completed.</p>
               </div>
             )}
           </div>

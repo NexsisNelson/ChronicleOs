@@ -160,7 +160,7 @@ async def test_memwal_client_uses_sdk_when_credentials_are_present(monkeypatch):
         "http://localhost:8000",
         private_key="0xabc",
         account_id="0x123",
-        server_url="https://relayer.staging.memwal.ai",
+        server_url="https://relayer-staging.memory.walrus.xyz",
     )
 
     proof = await client.save_memory("alpha", {"value": 1}, {"source": "test"})

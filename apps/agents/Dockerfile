@@ -12,11 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install
-COPY requirements.txt ./
+COPY apps/agents/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application
-COPY . .
+# Copy shared package and application
+COPY packages/memwal-adapter ./packages/memwal-adapter
+RUN pip install --no-cache-dir -e ./packages/memwal-adapter
+COPY apps/agents/main.py ./main.py
+COPY apps/agents/src ./src
 
 # Create data directories
 RUN mkdir -p data artifacts logs

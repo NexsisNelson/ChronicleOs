@@ -14,10 +14,6 @@
     "lint": "turbo run lint",
     "format": "turbo run format",
     "bootstrap": "node scripts/bootstrap.mjs",
-    "ready": "node scripts/verify-local-demo.mjs",
-    "reset:local": "node scripts/reset-local-demo.mjs",
-    "verify:local": "node scripts/verify-local-demo.mjs",
-    "test:dashboard-demo": "node --test apps/dashboard/tests/local-demo-data.test.mjs apps/dashboard/tests/local-demo-readiness.test.mjs",
     "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {

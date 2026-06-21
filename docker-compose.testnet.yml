@@ -44,8 +44,8 @@ services:
 
   agents:
     build:
-      context: ./apps/agents
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/agents/Dockerfile
     env_file:
       - apps/agents/.env
     environment:

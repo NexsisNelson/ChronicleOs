@@ -20,10 +20,10 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-6 py-24">
         <div className="text-center mb-20">
           <h2 className="text-5xl font-bold text-white mb-6">
-            Inspect Your Agents' Minds in Real-Time
+            Inspect your live agent workflow in real time.
           </h2>
           <p className="text-xl text-slate-300 mb-8">
-            Start with the seeded local demo, then move to live services once the readiness check passes.
+            ChronicleOS shows submitted tasks, persisted memory, and stored artifacts from the running workflow.
           </p>
           <Link
             href="/dashboard"
@@ -38,12 +38,12 @@ export default function Home() {
           <FeatureCard
             icon={<Clock className="w-6 h-6" />}
             title="Memory Timeline"
-            description="Open the seeded memory timeline first, then follow real workflow state as it appears."
+            description="Open the persisted memory timeline and follow real workflow state as it appears."
           />
           <FeatureCard
             icon={<FileStack className="w-6 h-6" />}
             title="Artifact Explorer"
-            description="Browse the sample artifacts before connecting to live Walrus storage."
+            description="Browse the artifact explorer to inspect live Walrus-backed outputs."
           />
           <FeatureCard
             icon={<Zap className="w-6 h-6" />}

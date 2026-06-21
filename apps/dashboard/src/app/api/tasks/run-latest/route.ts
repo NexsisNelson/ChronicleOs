@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, readdir, stat } from 'fs/promises'
+import { access, readFile, readdir, stat } from 'fs/promises'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
 import { join } from 'path'

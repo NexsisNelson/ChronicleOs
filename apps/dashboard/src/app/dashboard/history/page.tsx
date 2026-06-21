@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { MemWalClient } from '@/lib/api/memwal-client'
-import { demoSessionId } from '@/lib/local-demo-data'
 
 const client = new MemWalClient()
 
@@ -105,13 +104,7 @@ export default function HistoryPage() {
           ) : entries.length === 0 ? (
             <div className="space-y-4 rounded-3xl border border-dashed border-white/10 bg-slate-950/40 p-6 text-sm leading-6 text-slate-400">
               <p>No MemWal entries found yet.</p>
-              <p>Run the workflow or open the seeded local demo session to inspect an example run.</p>
-              <Link
-                href={`/dashboard/memory?key=research:${demoSessionId}`}
-                className="inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-4 py-2 text-teal-100 transition hover:bg-teal-400/20"
-              >
-                Open demo memory
-              </Link>
+              <p>Run a task from the Task Launcher, then refresh this page to inspect the persisted run history.</p>
             </div>
           ) : (
             <ul className="space-y-4">

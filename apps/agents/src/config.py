@@ -10,11 +10,12 @@ class ChronicleConfig(BaseSettings):
     """Main configuration object for ChronicleOS."""
     
     # Walrus
-    walrus_endpoint: str = "https://walrus-devnet.sui.io"
-    walrus_upload_path: str = "/blobs"
-    walrus_download_path: str = "/blobs/{cid}"
-    walrus_metadata_path: str = "/blobs/{cid}/metadata"
-    walrus_private_key: Optional[str] = None
+    walrus_endpoint: Optional[str] = None
+    walrus_publisher_endpoint: Optional[str] = "https://publisher.walrus-testnet.walrus.space"
+    walrus_aggregator_endpoint: Optional[str] = "https://aggregator.walrus-testnet.walrus.space"
+    walrus_upload_path: str = "/v1/blobs"
+    walrus_download_path: str = "/v1/blobs/{cid}"
+    walrus_metadata_path: str = "/v1/blobs/{cid}/metadata"
     walrus_gas_budget: int = 100_000_000
     
     # MemWal
@@ -22,6 +23,7 @@ class ChronicleConfig(BaseSettings):
     memwal_private_key: Optional[str] = None
     memwal_account_id: Optional[str] = None
     memwal_server_url: Optional[str] = None
+    memwal_namespace: str = "agents"
     
     # LLM
     openai_api_key: Optional[str] = None

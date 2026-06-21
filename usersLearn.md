@@ -51,7 +51,7 @@ ChronicleOS supports two MemWal modes:
 - local demo mode using `MEMWAL_ENDPOINT=http://localhost:8000`
 - hosted Walrus Memory using `MEMWAL_PRIVATE_KEY`, `MEMWAL_ACCOUNT_ID`, and `MEMWAL_SERVER_URL`
 
-The hosted setup follows the Walrus Memory getting-started model, where the relayer URL is typically `https://relayer.staging.memwal.ai` for staging or `https://relayer.memwal.ai` for production.
+The hosted setup follows the Walrus Memory getting-started model, where the relayer URL is typically `https://relayer-staging.memory.walrus.xyz` for staging or `https://relayer.memory.walrus.xyz` for production.
 
 ## One-Time Setup
 

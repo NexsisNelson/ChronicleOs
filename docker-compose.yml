@@ -82,8 +82,8 @@ services:
   # Agent Runtime - Python async agents
   agents:
     build:
-      context: ./apps/agents
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/agents/Dockerfile
     container_name: chronicle-agents
     environment:
       MEMWAL_ENDPOINT: http://memwal:8000

@@ -31,7 +31,7 @@ If you want to connect ChronicleOS to a hosted Walrus Memory relayer instead of 
 - `MEMWAL_ACCOUNT_ID`
 - `MEMWAL_SERVER_URL`
 
-Use `https://relayer.staging.memwal.ai` for staging or `https://relayer.memwal.ai` for production.
+Use `https://relayer-staging.memory.walrus.xyz` for staging or `https://relayer.memory.walrus.xyz` for production.
 Keep `MEMWAL_ENDPOINT=http://localhost:8000` for the built-in local demo path.
 
 ## Daily Workflow

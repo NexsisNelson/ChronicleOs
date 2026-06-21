@@ -24,7 +24,6 @@ jobs:
       CHRONICLE_LIVE_INTEGRATION: "1"
       CHRONICLE_LIVE_MEMWAL_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_MEMWAL_ENDPOINT || secrets.STAGING_MEMWAL_ENDPOINT }}
       CHRONICLE_LIVE_WALRUS_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_ENDPOINT || secrets.STAGING_WALRUS_ENDPOINT }}
-      CHRONICLE_LIVE_WALRUS_PRIVATE_KEY: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_PRIVATE_KEY || secrets.STAGING_WALRUS_PRIVATE_KEY }}
       CHRONICLE_LIVE_TIMEOUT_SECONDS: "240"
 
     steps:
