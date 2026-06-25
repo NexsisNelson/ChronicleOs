@@ -1,7 +1,7 @@
 {
-  "key": "audit:task-1",
+  "key": "audit:demo-1",
   "data": {
-    "task_id": "task-1",
+    "task_id": "demo-1",
     "findings": [
       {
         "severity": "info",
@@ -19,11 +19,11 @@
     "quality_score": 100,
     "approved": true,
     "feedback": "Quality review complete. Score: 100%. Status: \u2705 APPROVED",
-    "completed_at": "2026-06-21T20:06:39.394251"
+    "completed_at": "2026-06-25T13:12:21.392173"
   },
   "metadata": {},
   "agent": "audit",
-  "timestamp": "2026-06-21T19:06:39.394286Z",
-  "saved_at": "2026-06-21T19:06:39.394286Z",
-  "proof": "local:audit%3Atask-1"
+  "timestamp": "2026-06-25T12:12:21.392270Z",
+  "saved_at": "2026-06-25T12:12:21.392270Z",
+  "proof": "local:audit%3Ademo-1"
 }

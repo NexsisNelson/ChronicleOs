@@ -38,6 +38,14 @@ npm run ready
 
 It confirms the dashboard, agent CLI, and seeded demo bundle are all ready together.
 
+For a full local end-to-end experience, start the demo workflow and dashboard with:
+
+```bash
+npm run demo
+```
+
+This runs the agent workflow in local-demo mode and launches the dashboard at http://127.0.0.1:3000.
+
 ### Development
 
 ```bash
@@ -161,7 +169,8 @@ approval = auditor.review(artifact)
 
 **`apps/agents/.env`:**
 ```
-WALRUS_ENDPOINT=https://walrus-devnet.sui.io
+WALRUS_PUBLISHER_ENDPOINT=https://publisher.walrus-testnet.walrus.space
+WALRUS_AGGREGATOR_ENDPOINT=https://aggregator.walrus-testnet.walrus.space
 MEMWAL_ENDPOINT=http://localhost:8000
 MEMWAL_PRIVATE_KEY=<your-ed25519-delegate-private-key-hex>
 MEMWAL_ACCOUNT_ID=<your-walrus-memory-account-id>
@@ -172,7 +181,7 @@ LOG_LEVEL=INFO
 
 **`apps/dashboard/.env.local`:**
 ```
-NEXT_PUBLIC_WALRUS_GATEWAY=https://walrus-testnet-gateway.sui.io
+NEXT_PUBLIC_WALRUS_AGGREGATOR_ENDPOINT=https://aggregator.walrus-testnet.walrus.space
 NEXT_PUBLIC_MEMWAL_API=/api/memwal
 MEMWAL_NAMESPACE=dashboard
 ```

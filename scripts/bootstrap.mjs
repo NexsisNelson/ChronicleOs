@@ -130,6 +130,7 @@ function envTemplate() {
 function dashboardEnvTemplate() {
   const values = {
     NEXT_PUBLIC_MEMWAL_API: '/api/memwal',
+    NEXT_PUBLIC_LOCAL_DEMO: '1',
   }
 
   return Object.entries(values).map(([key, value]) => `${key}=${value}`).join('\n') + '\n'

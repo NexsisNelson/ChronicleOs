@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Activity, CheckCircle2, Database, Layers3, MessageSquarePlus, ShieldCheck, Sparkles } from 'lucide-react'
 import { MemWalClient } from '@/lib/api/memwal-client'
 import { WalrusClient } from '@/lib/api/walrus-client'
+import localDemoData from '@/lib/local-demo-data.json'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,7 +52,14 @@ export default function DashboardHome() {
       }
     }
 
-    loadServiceStatus()
+    if (process.env.NEXT_PUBLIC_LOCAL_DEMO === '1') {
+      setMemwalStatus(`Local demo seed loaded — ${localDemoData.demoMemoryEntries.length} entries`)
+      setWalrusStatus(`Local demo seed loaded — ${localDemoData.demoArtifacts.length} artifacts`)
+      setStatusLoading(false)
+      return
+    }
+
+    void loadServiceStatus()
   }, [])
 
   return (

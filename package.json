@@ -14,6 +14,8 @@
     "lint": "turbo run lint",
     "format": "turbo run format",
     "bootstrap": "node scripts/bootstrap.mjs",
+    "ready": "python apps/agents/main.py --ready --local-demo",
+    "demo": "node scripts/run-local-demo.mjs",
     "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {

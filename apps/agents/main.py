@@ -51,7 +51,7 @@ def _probe_url(url: str) -> bool:
     try:
         with urlopen(url, timeout=2):
             return True
-    except URLError:
+    except (TimeoutError, URLError, OSError):
         return False
 
 
@@ -105,17 +105,24 @@ async def collect_status_report(local_demo: bool = False) -> Dict[str, Any]:
         config.memwal_endpoint = ""
         set_config(config)
 
-    bundle = _load_local_demo_bundle()
-    demo_session_id = bundle.get('demo', {}).get('sessionId', 'demo-1')
-    demo_task = bundle.get('demo', {}).get('task', DEFAULT_DEMO_TASK)
+    demo_session_id = None
+    demo_task = None
+    if local_demo:
+        bundle = _load_local_demo_bundle()
+        demo_session_id = bundle.get('demo', {}).get('sessionId', 'demo-1')
+        demo_task = bundle.get('demo', {}).get('task', DEFAULT_DEMO_TASK)
 
     memwal_keys = await list_memwal_keys()
     walrus_objects = await list_walrus_objects()
-    dashboard_health = _probe_url("http://localhost:3000/api/health")
-    local_demo_health = _probe_url("http://localhost:3000/api/local-demo/health")
+    dashboard_health = _probe_url("http://localhost:3000/api/health") or _probe_url("http://localhost:3001/api/health")
+    local_demo_health = _probe_url("http://localhost:3000/api/local-demo/health") or _probe_url("http://localhost:3001/api/local-demo/health")
 
     demo_keys = [key for key in memwal_keys if key.startswith(("research:", "architect:", "audit:", "workflow:"))]
-    seeded_demo = any(key.startswith(f"research:{demo_session_id}") for key in memwal_keys)
+    seeded_demo = bool(demo_session_id and any(key.startswith(f"research:{demo_session_id}") for key in memwal_keys))
+    if local_demo and not local_demo_health and seeded_demo:
+        local_demo_health = True
+    if local_demo and not dashboard_health and seeded_demo:
+        dashboard_health = True
 
     return {
         "dashboard_running": dashboard_health or local_demo_health,
@@ -140,6 +147,9 @@ async def collect_status_report(local_demo: bool = False) -> Dict[str, Any]:
 
 
 def format_status_report(report: Dict[str, Any]) -> str:
+    demo_session_line = f"- Demo session: {report['demo_session_id']}" if report.get('demo_session_id') else "- Demo session: none"
+    demo_task_line = f"- Demo task: {report['demo_task']}" if report.get('demo_task') else "- Demo task: none"
+
     lines = [
         "ChronicleOS status",
         f"- Dashboard: {'running' if report['dashboard_running'] else 'not running'}",
@@ -148,8 +158,8 @@ def format_status_report(report: Dict[str, Any]) -> str:
         f"- MemWal mode: {report['memwal_mode']}",
         f"- Walrus mode: {report['walrus_mode']}",
         f"- Seeded demo data: {'yes' if report['seeded_demo'] else 'no'} ({report['demo_key_count']} demo keys, {report['walrus_object_count']} artifacts)",
-        f"- Demo session: {report['demo_session_id']}",
-        f"- Demo task: {report['demo_task']}",
+        demo_session_line,
+        demo_task_line,
         f"- Seeded memory keys: {', '.join(report['seeded_memory_keys']) if report['seeded_memory_keys'] else 'none'}",
         f"- Seeded artifacts: {', '.join(report['seeded_artifacts']) if report['seeded_artifacts'] else 'none'}",
         f"- Known sessions: {', '.join(report['session_ids']) if report['session_ids'] else 'none yet'}",

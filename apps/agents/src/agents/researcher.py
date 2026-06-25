@@ -2,11 +2,12 @@
 
 import json
 import logging
-from typing import List, Dict, Any
+from typing import Dict, Any
 from datetime import datetime
 
 from src.config import ChronicleConfig
 from src.models.types import ResearchTask, ResearchResult
+from src.tools.llm_client import generate_json
 from src.tools.walrus_tools import upload_to_walrus
 from src.tools.memwal_tools import save_to_memwal
 
@@ -31,18 +32,45 @@ class ResearcherAgent:
             ResearchResult with gathered data and metadata
         """
         logger.info(f"{self.name}: Starting research on '{task.description}'")
-        
-        sources = [
-            {
-                "title": f"Research Source {i+1}",
-                "url": f"https://example.com/source{i+1}",
-                "content": f"Sample research content for source {i+1}",
-                "timestamp": datetime.now().isoformat(),
-            }
-            for i in range(3)
-        ]
-        
-        summary = f"Researched: {task.description}. Found {len(sources)} relevant sources."
+
+        system_prompt = (
+            "You are the ChronicleOS Researcher agent. Produce compact, task-specific research notes "
+            "based on the user's task. Do not invent external citations or URLs. Return only valid JSON."
+        )
+        user_prompt = f"""
+Task: {task.description}
+
+Return JSON with these keys:
+- summary: a concise but concrete summary of how to approach the task
+- sources: an array of exactly 3 evidence items, each with title and content
+- confidence: a number from 0 to 1
+
+The evidence items should be grounded in the task itself, not fake web citations.
+""".strip()
+
+        llm_result = await generate_json(self.config, system_prompt, user_prompt)
+
+        sources = llm_result.get("sources") if isinstance(llm_result.get("sources"), list) else []
+        if not sources:
+            sources = [
+                {
+                    "title": "Task brief",
+                    "content": task.description,
+                    "timestamp": datetime.now().isoformat(),
+                },
+                {
+                    "title": "Execution focus",
+                    "content": "Use the configured LLMs to produce task-specific output and persist the results.",
+                    "timestamp": datetime.now().isoformat(),
+                },
+                {
+                    "title": "Verification",
+                    "content": "Review the generated output in the dashboard history and artifact explorer after the workflow finishes.",
+                    "timestamp": datetime.now().isoformat(),
+                },
+            ]
+
+        summary = str(llm_result.get("summary") or f"Task analysis for: {task.description}")
         result_payload = {
             "task_id": task.id,
             "description": task.description,
@@ -65,7 +93,7 @@ class ResearcherAgent:
             },
             walrus_cids=[cid],
             summary=summary,
-            confidence=0.75,
+            confidence=float(llm_result.get("confidence") or 0.75),
         )
 
         await save_to_memwal(f"research:{task.id}", {

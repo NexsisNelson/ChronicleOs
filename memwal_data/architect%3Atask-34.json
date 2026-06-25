@@ -1,21 +1,21 @@
 {
-  "key": "architect:task-1",
+  "key": "architect:task-34",
   "data": {
-    "task_id": "task-1",
+    "task_id": "task-34",
     "artifacts": [
       {
         "name": "research_summary.md",
         "type": "report",
-        "walrus_cid": "atahvsbvRzDQth4J_U1W9ex7Py8mlvYdyXVmJIr63l0",
+        "walrus_cid": "k6KZB0Fh3oNXpfV0qO48Spl4kEmKwmIh-IDiO1iDl1M",
         "metadata": {
           "format": "markdown",
-          "research_task_id": "task-1"
+          "research_task_id": "task-34"
         }
       },
       {
         "name": "data_export.json",
         "type": "dataset",
-        "walrus_cid": "b8LOuWy8d2doICvuhzjU2eQv3uxLFVrEdDO7nH32tHM",
+        "walrus_cid": "g6r01Vok7zY7DmkIisEpW1iNq5sUYWu2G2hR9pkpxTc",
         "metadata": {
           "format": "json",
           "total_records": 3
@@ -27,11 +27,11 @@
       "Keep the summary human-readable for the video.",
       "Export structured JSON for downstream inspection."
     ],
-    "created_at": "2026-06-21T20:05:41.618447"
+    "created_at": "2026-06-21T20:06:31.737570"
   },
   "metadata": {},
   "agent": "architect",
-  "timestamp": "2026-06-21T19:05:41.618495Z",
-  "saved_at": "2026-06-21T19:05:41.618495Z",
-  "proof": "local:architect%3Atask-1"
+  "timestamp": "2026-06-21T19:06:31.737612Z",
+  "saved_at": "2026-06-21T19:06:31.737612Z",
+  "proof": "local:architect%3Atask-34"
 }

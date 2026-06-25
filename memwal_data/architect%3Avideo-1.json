@@ -1,0 +1,37 @@
+{
+  "key": "architect:video-1",
+  "data": {
+    "task_id": "video-1",
+    "artifacts": [
+      {
+        "name": "research_summary.md",
+        "type": "report",
+        "walrus_cid": "NOS8Seyuk2vka3SEpkpiZS-2AKKXZFlkKNPbanYWJxI",
+        "metadata": {
+          "format": "markdown",
+          "research_task_id": "video-1"
+        }
+      },
+      {
+        "name": "data_export.json",
+        "type": "dataset",
+        "walrus_cid": "FCQZEHOU6jxA1ElYXmCxlAPvnekASjNUyw9FVg3byQo",
+        "metadata": {
+          "format": "json",
+          "total_records": 3
+        }
+      }
+    ],
+    "synthesis_notes": "Synthesized 3 sources into 2 artifacts.",
+    "decisions": [
+      "Chose markdown format for the summary for human readability.",
+      "Exported research sources as JSON for structured downstream processing."
+    ],
+    "created_at": "2026-06-21T19:50:12.664684"
+  },
+  "metadata": {},
+  "agent": "architect",
+  "timestamp": "2026-06-21T18:50:12.664712Z",
+  "saved_at": "2026-06-21T18:50:12.664712Z",
+  "proof": "local:architect%3Avideo-1"
+}

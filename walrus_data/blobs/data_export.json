@@ -1,0 +1,10 @@
+{
+  "task": "Task id: demo-1",
+  "analysis": "The workflow should produce a real task-specific result, not seeded demo data.",
+  "recommended_next_step": "Run the task from the dashboard and open the memory and artifact records after completion.",
+  "risks": [
+    "LLM provider rate limits",
+    "Missing environment variables",
+    "Downstream persistence failures"
+  ]
+}

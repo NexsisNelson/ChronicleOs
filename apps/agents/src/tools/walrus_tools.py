@@ -10,6 +10,7 @@ import httpx
 from src.config import get_config
 from src.tools.local_store import read_walrus_blob as read_local_walrus_blob
 from src.tools.local_store import save_walrus_blob as save_local_walrus_blob
+from src.tools.local_store import walrus_store_dir
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +133,13 @@ async def list_walrus_objects() -> list:
         return []
 
     local_dir = _local_artifacts_dir()
-    if not local_dir.exists():
-        return []
-    return [str(path.name) for path in sorted(local_dir.iterdir()) if path.is_file()]
+    walrus_dir = walrus_store_dir()
+    candidates = []
+
+    if local_dir.exists():
+        candidates.extend(local_dir.iterdir())
+    if walrus_dir.exists():
+        candidates.extend(walrus_dir.iterdir())
+
+    files = [path for path in candidates if path.is_file()]
+    return [str(path.name) for path in sorted(files, key=lambda path: path.name)]

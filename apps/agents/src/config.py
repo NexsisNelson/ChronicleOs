@@ -3,7 +3,12 @@
 from pathlib import Path
 from typing import Optional
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
+
+
+def _default_env_file() -> str:
+    return str(Path(__file__).resolve().parents[1] / ".env")
 
 
 class ChronicleConfig(BaseSettings):
@@ -36,6 +41,21 @@ class ChronicleConfig(BaseSettings):
     # Logging
     log_level: str = "INFO"
     debug: bool = False
+
+    @field_validator("debug", mode="before")
+    @classmethod
+    def parse_debug(cls, value):
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return False
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"1", "true", "yes", "y", "on", "info", "warn", "warning", "debug"}:
+                return True
+            if normalized in {"0", "false", "no", "n", "off"}:
+                return False
+        return bool(value)
     
     # Workflow
     session_id: str = "session_default"
@@ -48,7 +68,7 @@ class ChronicleConfig(BaseSettings):
     logs_dir: str = "./logs"
     
     class Config:
-        env_file = ".env"
+        env_file = _default_env_file()
         case_sensitive = False
     
     def __init__(self, **data):

@@ -23,6 +23,8 @@ jobs:
       LIVE_TARGET: ${{ github.event.inputs.environment || 'staging' }}
       CHRONICLE_LIVE_INTEGRATION: "1"
       CHRONICLE_LIVE_MEMWAL_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_MEMWAL_ENDPOINT || secrets.STAGING_MEMWAL_ENDPOINT }}
+      CHRONICLE_LIVE_WALRUS_PUBLISHER_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_PUBLISHER_ENDPOINT || secrets.STAGING_WALRUS_PUBLISHER_ENDPOINT || secrets.PROD_WALRUS_ENDPOINT || secrets.STAGING_WALRUS_ENDPOINT }}
+      CHRONICLE_LIVE_WALRUS_AGGREGATOR_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_AGGREGATOR_ENDPOINT || secrets.STAGING_WALRUS_AGGREGATOR_ENDPOINT || secrets.PROD_WALRUS_ENDPOINT || secrets.STAGING_WALRUS_ENDPOINT }}
       CHRONICLE_LIVE_WALRUS_ENDPOINT: ${{ github.event.inputs.environment == 'production' && secrets.PROD_WALRUS_ENDPOINT || secrets.STAGING_WALRUS_ENDPOINT }}
       CHRONICLE_LIVE_TIMEOUT_SECONDS: "240"
 
@@ -42,7 +44,7 @@ jobs:
 
       - name: Validate live endpoints are configured
         run: |
-          if [ -z "$CHRONICLE_LIVE_MEMWAL_ENDPOINT" ] || [ -z "$CHRONICLE_LIVE_WALRUS_ENDPOINT" ]; then
+          if [ -z "$CHRONICLE_LIVE_MEMWAL_ENDPOINT" ] || { [ -z "$CHRONICLE_LIVE_WALRUS_PUBLISHER_ENDPOINT" ] && [ -z "$CHRONICLE_LIVE_WALRUS_ENDPOINT" ]; } || { [ -z "$CHRONICLE_LIVE_WALRUS_AGGREGATOR_ENDPOINT" ] && [ -z "$CHRONICLE_LIVE_WALRUS_ENDPOINT" ]; }; then
             echo "Live integration endpoints are not configured for $LIVE_TARGET"
             exit 1
           fi

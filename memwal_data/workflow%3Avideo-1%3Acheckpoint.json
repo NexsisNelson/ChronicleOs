@@ -1,0 +1,103 @@
+{
+  "key": "workflow:video-1:checkpoint",
+  "data": {
+    "task_id": "video-1",
+    "task_description": "Summarize the ChronicleOS system for a short demo video, focusing on live memory, artifacts, and the dashboard workflow.",
+    "checkpoint_stage": "complete",
+    "research": {
+      "task_id": "video-1",
+      "sources": [
+        {
+          "title": "Research Source 1",
+          "url": "https://example.com/source1",
+          "content": "Sample research content for source 1",
+          "timestamp": "2026-06-21T19:49:25.205936"
+        },
+        {
+          "title": "Research Source 2",
+          "url": "https://example.com/source2",
+          "content": "Sample research content for source 2",
+          "timestamp": "2026-06-21T19:49:25.205963"
+        },
+        {
+          "title": "Research Source 3",
+          "url": "https://example.com/source3",
+          "content": "Sample research content for source 3",
+          "timestamp": "2026-06-21T19:49:25.205970"
+        }
+      ],
+      "raw_data": {
+        "query": "Summarize the ChronicleOS system for a short demo video, focusing on live memory, artifacts, and the dashboard workflow.",
+        "total_sources": 3,
+        "processed_at": "2026-06-21T19:49:36.995220"
+      },
+      "walrus_cids": [
+        "ClhOUybvq9-sxRyNvz6KqKQZldYvEtxmgbpYzLWZ05I"
+      ],
+      "summary": "Researched: Summarize the ChronicleOS system for a short demo video, focusing on live memory, artifacts, and the dashboard workflow.. Found 3 relevant sources.",
+      "confidence": 0.75,
+      "completed_at": "2026-06-21T19:49:36.995254"
+    },
+    "architecture": {
+      "task_id": "video-1",
+      "artifacts": [
+        {
+          "name": "research_summary.md",
+          "type": "report",
+          "content": "# Research Summary\n\nResearched: Summarize the ChronicleOS system for a short demo video, focusing on live memory, artifacts, and the dashboard workflow.. Found 3 relevant sources.\n\nSources: 3",
+          "walrus_cid": "NOS8Seyuk2vka3SEpkpiZS-2AKKXZFlkKNPbanYWJxI",
+          "metadata": {
+            "format": "markdown",
+            "research_task_id": "video-1"
+          }
+        },
+        {
+          "name": "data_export.json",
+          "type": "dataset",
+          "content": "{\n  \"sources\": [\n    {\n      \"title\": \"Research Source 1\",\n      \"url\": \"https://example.com/source1\",\n      \"content\": \"Sample research content for source 1\",\n      \"timestamp\": \"2026-06-21T19:49:25.205936\"\n    },\n    {\n      \"title\": \"Research Source 2\",\n      \"url\": \"https://example.com/source2\",\n      \"content\": \"Sample research content for source 2\",\n      \"timestamp\": \"2026-06-21T19:49:25.205963\"\n    },\n    {\n      \"title\": \"Research Source 3\",\n      \"url\": \"https://example.com/source3\",\n      \"content\": \"Sample research content for source 3\",\n      \"timestamp\": \"2026-06-21T19:49:25.205970\"\n    }\n  ]\n}",
+          "walrus_cid": "FCQZEHOU6jxA1ElYXmCxlAPvnekASjNUyw9FVg3byQo",
+          "metadata": {
+            "format": "json",
+            "total_records": 3
+          }
+        }
+      ],
+      "synthesis_notes": "Synthesized 3 sources into 2 artifacts.",
+      "decisions": [
+        "Chose markdown format for the summary for human readability.",
+        "Exported research sources as JSON for structured downstream processing."
+      ],
+      "completed_at": "2026-06-21T19:50:21.709850"
+    },
+    "audit": {
+      "task_id": "video-1",
+      "findings": [
+        {
+          "severity": "info",
+          "message": "Found 2 artifacts for review",
+          "artifact_name": null,
+          "suggested_action": ""
+        },
+        {
+          "severity": "info",
+          "message": "Architect decisions were loaded from MemWal context",
+          "artifact_name": null,
+          "suggested_action": "Review referenced decisions in the artifact metadata"
+        }
+      ],
+      "quality_score": 100,
+      "approved": true,
+      "feedback": "Quality review complete. Score: 100%. Status: \u2705 APPROVED",
+      "completed_at": "2026-06-21T19:50:42.524535"
+    },
+    "created_at": "2026-06-21T19:50:42.525553",
+    "completed_at": null
+  },
+  "metadata": {
+    "kind": "workflow_checkpoint"
+  },
+  "agent": "workflow",
+  "timestamp": "2026-06-21T18:50:42.526265Z",
+  "saved_at": "2026-06-21T18:50:42.526265Z",
+  "proof": "local:workflow%3Avideo-1%3Acheckpoint"
+}

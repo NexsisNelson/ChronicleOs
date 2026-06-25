@@ -1,11 +1,11 @@
 {
-  "key": "workflow:task-1:checkpoint",
+  "key": "workflow:task-34:checkpoint",
   "data": {
-    "task_id": "task-1",
+    "task_id": "task-34",
     "task_description": "where is liverpool",
     "checkpoint_stage": "complete",
     "research": {
-      "task_id": "task-1",
+      "task_id": "task-34",
       "sources": [
         {
           "title": "Task brief",
@@ -23,33 +23,33 @@
       "raw_data": {
         "query": "where is liverpool",
         "total_sources": 3,
-        "processed_at": "2026-06-21T20:04:23.328138"
+        "processed_at": "2026-06-21T20:05:11.184030"
       },
       "walrus_cids": [
-        "c4l2EK4534HfclIYErvc5GkWhhoZPvgpOGDnKJkk3RA"
+        "GgSUPwZVS2-a5lpGjfS92D4X6wl6tjEPz4cY1r2mVBY"
       ],
       "summary": "ChronicleOS should where is liverpool; start by using the dashboard task launcher, then inspect the persisted memory and artifact outputs after the workflow completes.",
       "confidence": 0.72,
-      "completed_at": "2026-06-21T20:04:23.328175"
+      "completed_at": "2026-06-21T20:05:11.184066"
     },
     "architecture": {
-      "task_id": "task-1",
+      "task_id": "task-34",
       "artifacts": [
         {
           "name": "research_summary.md",
           "type": "report",
-          "content": "# Task Summary\n\nTask: Task id: task-1\n\nChronicleOS can complete this task by running the agent workflow, persisting the result to memory, and exposing the artifacts in the dashboard.\n\nRecommended next step: run the workflow, then open history and artifact pages to review the output.",
-          "walrus_cid": "atahvsbvRzDQth4J_U1W9ex7Py8mlvYdyXVmJIr63l0",
+          "content": "# Task Summary\n\nTask: Task id: task-34\n\nChronicleOS can complete this task by running the agent workflow, persisting the result to memory, and exposing the artifacts in the dashboard.\n\nRecommended next step: run the workflow, then open history and artifact pages to review the output.",
+          "walrus_cid": "k6KZB0Fh3oNXpfV0qO48Spl4kEmKwmIh-IDiO1iDl1M",
           "metadata": {
             "format": "markdown",
-            "research_task_id": "task-1"
+            "research_task_id": "task-34"
           }
         },
         {
           "name": "data_export.json",
           "type": "dataset",
-          "content": "{\n  \"task\": \"Task id: task-1\",\n  \"analysis\": \"The workflow should produce a real task-specific result, not seeded demo data.\",\n  \"recommended_next_step\": \"Run the task from the dashboard and open the memory and artifact records after completion.\",\n  \"risks\": [\n    \"LLM provider rate limits\",\n    \"Missing environment variables\",\n    \"Downstream persistence failures\"\n  ]\n}",
-          "walrus_cid": "b8LOuWy8d2doICvuhzjU2eQv3uxLFVrEdDO7nH32tHM",
+          "content": "{\n  \"task\": \"Task id: task-34\",\n  \"analysis\": \"The workflow should produce a real task-specific result, not seeded demo data.\",\n  \"recommended_next_step\": \"Run the task from the dashboard and open the memory and artifact records after completion.\",\n  \"risks\": [\n    \"LLM provider rate limits\",\n    \"Missing environment variables\",\n    \"Downstream persistence failures\"\n  ]\n}",
+          "walrus_cid": "g6r01Vok7zY7DmkIisEpW1iNq5sUYWu2G2hR9pkpxTc",
           "metadata": {
             "format": "json",
             "total_records": 3
@@ -61,10 +61,10 @@
         "Keep the summary human-readable for the video.",
         "Export structured JSON for downstream inspection."
       ],
-      "completed_at": "2026-06-21T20:06:10.746496"
+      "completed_at": "2026-06-21T20:06:59.078897"
     },
     "audit": {
-      "task_id": "task-1",
+      "task_id": "task-34",
       "findings": [
         {
           "severity": "info",
@@ -82,16 +82,16 @@
       "quality_score": 100,
       "approved": true,
       "feedback": "Quality review complete. Score: 100%. Status: \u2705 APPROVED",
-      "completed_at": "2026-06-21T20:07:06.205475"
+      "completed_at": "2026-06-21T20:08:00.522857"
     },
-    "created_at": "2026-06-21T20:07:06.206105",
+    "created_at": "2026-06-21T20:08:00.523510",
     "completed_at": null
   },
   "metadata": {
     "kind": "workflow_checkpoint"
   },
   "agent": "workflow",
-  "timestamp": "2026-06-21T19:07:06.206507Z",
-  "saved_at": "2026-06-21T19:07:06.206507Z",
-  "proof": "local:workflow%3Atask-1%3Acheckpoint"
+  "timestamp": "2026-06-21T19:08:00.523943Z",
+  "saved_at": "2026-06-21T19:08:00.523943Z",
+  "proof": "local:workflow%3Atask-34%3Acheckpoint"
 }

@@ -6,6 +6,46 @@ import { Check, Copy, Download, Sparkles, TerminalSquare } from 'lucide-react'
 const defaultTask = 'Research the latest ChronicleOS workflow improvements and summarize the best next step for users.'
 const defaultSessionId = 'task-1'
 
+type RunResult = {
+  sessionId: string
+  task?: string
+  exitCode: number
+  command: string
+  submittedAt?: string
+  stdout?: string
+  stderr?: string
+  result?: {
+    taskId: string
+    taskDescription: string
+    status: string
+    research: {
+      summary: string
+      sources: number
+      walrusCid?: string
+    } | null
+    architecture: {
+      synthesisNotes: string
+      artifacts: Array<{
+        name: string
+        type: string
+        walrusCid?: string
+        metadata?: Record<string, unknown>
+      }>
+    } | null
+    audit: {
+      qualityScore: number
+      approved: boolean
+      feedback: string
+      findings: Array<{
+        severity: string
+        message: string
+        suggestedAction?: string
+        artifactName?: string
+      }>
+    } | null
+  }
+}
+
 function escapePowerShellArgument(value: string) {
   return `"${value.split('"').join('`"')}"`
 }
@@ -23,6 +63,7 @@ export default function TaskLauncherPage() {
   const [submissionMessage, setSubmissionMessage] = useState<string | null>(null)
   const [runMessage, setRunMessage] = useState<string | null>(null)
   const [taskFilePath, setTaskFilePath] = useState<string | null>(null)
+  const [runResult, setRunResult] = useState<RunResult | null>(null)
 
   const taskFileContent = useMemo(() => task.trim() || defaultTask, [task])
   const powerShellCommand = useMemo(
@@ -72,6 +113,7 @@ export default function TaskLauncherPage() {
     setSubmitting(true)
     setSubmissionMessage(null)
     setTaskFilePath(null)
+    setRunResult(null)
 
     try {
       const response = await fetch('/api/tasks', {
@@ -109,6 +151,7 @@ export default function TaskLauncherPage() {
   const runLatestSubmittedTask = async (submittedSessionId?: string) => {
     setRunning(true)
     setRunMessage(null)
+    setRunResult(null)
 
     try {
       const response = await fetch('/api/tasks/run-latest', {
@@ -124,17 +167,38 @@ export default function TaskLauncherPage() {
       const payload = (await response.json()) as {
         error?: string
         command?: string
-        pid?: number
+        exitCode?: number
         sessionId?: string
+        result?: RunResult['result']
+        stdout?: string
+        stderr?: string
+        task?: string
+        submittedAt?: string
       }
 
       if (!response.ok) {
-        throw new Error(payload.error ?? 'Failed to launch the latest submitted task.')
+        throw new Error(payload.error ?? 'Failed to run the latest submitted task.')
       }
 
-      setRunMessage(`Running ${payload.sessionId ?? submittedSessionId ?? sessionId} in the background as PID ${payload.pid ?? 'unknown'}.`)
+      const resultSessionId = payload.sessionId ?? submittedSessionId ?? sessionId
+      setRunResult({
+        sessionId: resultSessionId,
+        task: payload.task,
+        exitCode: payload.exitCode ?? 0,
+        command: payload.command ?? '',
+        submittedAt: payload.submittedAt,
+        stdout: payload.stdout,
+        stderr: payload.stderr,
+        result: payload.result,
+      })
+
+      setRunMessage(
+        payload.result
+          ? `Completed ${resultSessionId}. ${payload.result.research?.sources ?? 0} sources, ${payload.result.architecture?.artifacts.length ?? 0} artifacts, quality ${payload.result.audit?.qualityScore ?? 0}%.`
+          : `Completed ${resultSessionId}, but no structured result was returned.`
+      )
     } catch (error) {
-      setRunMessage(error instanceof Error ? error.message : 'Failed to launch the latest submitted task.')
+      setRunMessage(error instanceof Error ? error.message : 'Failed to run the latest submitted task.')
     } finally {
       setRunning(false)
     }
@@ -249,6 +313,59 @@ export default function TaskLauncherPage() {
                 </div>
               )}
             </div>
+
+            {runResult?.result && (
+              <div className="rounded-[24px] border border-teal-400/20 bg-teal-400/10 p-4 text-sm leading-6 text-slate-100">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-teal-200">Latest result</p>
+                    <h3 className="mt-1 text-lg font-semibold text-white">{runResult.sessionId}</h3>
+                  </div>
+                  <div className="rounded-full border border-white/10 bg-slate-950/50 px-3 py-1 text-xs text-slate-200">
+                    Exit code {runResult.exitCode}
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <ResultStat label="Sources" value={String(runResult.result.research?.sources ?? 0)} />
+                  <ResultStat label="Artifacts" value={String(runResult.result.architecture?.artifacts.length ?? 0)} />
+                  <ResultStat label="Quality" value={`${runResult.result.audit?.qualityScore ?? 0}%`} />
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  {runResult.result.research?.summary && (
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Research summary</p>
+                      <p className="mt-2 text-slate-100">{runResult.result.research.summary}</p>
+                    </div>
+                  )}
+
+                  {runResult.result.architecture?.artifacts?.length ? (
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Artifacts</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {runResult.result.architecture.artifacts.map((artifact) => (
+                          <a
+                            key={`${artifact.name}-${artifact.walrusCid ?? 'local'}`}
+                            href={artifact.walrusCid ? `/dashboard/artifacts?cid=${encodeURIComponent(artifact.walrusCid)}` : '/dashboard/artifacts'}
+                            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+                          >
+                            {artifact.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {runResult.result.audit?.feedback && (
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Audit feedback</p>
+                      <p className="mt-2 text-slate-100">{runResult.result.audit.feedback}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex min-h-0 flex-col gap-4 rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
@@ -352,6 +469,15 @@ function CommandCard({
         </button>
       </div>
       <pre className="mt-2 max-h-24 overflow-auto rounded-xl border border-white/10 bg-slate-950/70 p-2.5 text-[11px] leading-5 text-slate-200">{command}</pre>
+    </div>
+  )
+}
+
+function ResultStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-3">
+      <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">{label}</p>
+      <p className="mt-2 text-lg font-semibold text-white">{value}</p>
     </div>
   )
 }

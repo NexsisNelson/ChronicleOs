@@ -1,0 +1,63 @@
+{
+  "demo": {
+    "sessionId": "demo-1",
+    "task": "Produce a ChronicleOS local demo run with seeded memory and artifacts"
+  },
+  "bootstrap": {
+    "dashboardEnv": {
+      "NEXT_PUBLIC_LOCAL_DEMO": "1"
+    }
+  },
+  "seed": {
+    "memoryEntries": [
+      {
+        "key": "research:demo-1",
+        "agent": "research",
+        "data": {
+          "summary": "Local demo research summary",
+          "sources": [
+            {"title": "Task brief", "content": "Produce a ChronicleOS local demo run with seeded memory and artifacts"}
+          ],
+          "confidence": 0.9
+        }
+      },
+      {
+        "key": "architect:demo-1",
+        "agent": "architect",
+        "data": {
+          "artifacts": [
+            {"name": "research_summary.md", "type": "report", "walrus_cid": "local://research_summary.md"},
+            {"name": "data_export.json", "type": "dataset", "walrus_cid": "local://data_export.json"}
+          ],
+          "decisions": ["Use the local demo bundle", "Persist artifact metadata for inspection"]
+        }
+      },
+      {
+        "key": "audit:demo-1",
+        "agent": "audit",
+        "data": {
+          "approved": true,
+          "quality_score": 95,
+          "feedback": "Local demo workflow completed successfully"
+        }
+      },
+      {
+        "key": "workflow:demo-1:checkpoint",
+        "agent": "workflow",
+        "data": {
+          "checkpoint_stage": "complete"
+        }
+      }
+    ],
+    "artifacts": [
+      {
+        "name": "research_summary.md",
+        "cid": "local://research_summary.md"
+      },
+      {
+        "name": "data_export.json",
+        "cid": "local://data_export.json"
+      }
+    ]
+  }
+}

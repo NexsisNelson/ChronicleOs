@@ -188,17 +188,18 @@ Then:
 ./.venv/bin/python apps/agents/main.py --local-demo
 ```
 
-### Scenario 3: Real workflow run with your own task
+### Scenario 3: Run a real task
 
-Use this when you want ChronicleOS to process a real prompt and write live workflow output.
+Use this when you want ChronicleOS to process a live prompt and show the results in the dashboard.
 
 Steps:
 
 1. Open the dashboard Task Launcher.
-2. Paste your task and choose a session id.
-3. Click `Submit and run latest task`.
-4. Wait for the Researcher, Architect, and Auditor phases to complete.
-5. Review the results in the dashboard memory, artifacts, and history pages.
+2. Paste your task description into the text box.
+3. Choose or keep the session id.
+4. Click `Submit and run latest task`.
+5. Wait for the Researcher, Architect, and Auditor phases to finish.
+6. Review the output in the History, Memory, and Artifacts pages.
 
 Windows PowerShell:
 
@@ -340,16 +341,16 @@ macOS / Linux:
 ./.venv/bin/python apps/agents/main.py --local-demo
 ```
 
-### Scenario 9: Use a task from a file
+### Scenario 9: Run a task from a file
 
-Use this when you want to keep a long or reusable task in a text file instead of typing into the dashboard.
+Use this when you already have a task saved in a file and want to run it without retyping it.
 
 Steps:
 
-1. Create a text file with one task description, or paste the task into the Task Launcher and use the download button.
-2. Run the agent CLI with `--task-file`, or submit the task in the dashboard and click `Run latest`.
+1. Create a text file with one task description.
+2. Run the agent CLI with `--task-file`, or paste the same task into the Task Launcher.
 3. Add `--session-id` if you want the run tracked as a named session.
-4. Check the dashboard after the workflow completes.
+4. Run the task and check the dashboard after the workflow completes.
 
 Example:
 
@@ -413,7 +414,7 @@ The dashboard is where you inspect the result:
 The simplest recurring flow is:
 
 1. Start the dashboard
-2. Use the Task Launcher for real tasks, or `--local-demo` for seeded sample data
+2. Use the Task Launcher to submit a real task
 3. Wait for the workflow to finish
 4. Inspect memory, artifacts, and history
 5. Use `--resume` or `--task-file` when needed

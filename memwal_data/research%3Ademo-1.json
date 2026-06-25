@@ -1,0 +1,32 @@
+{
+  "key": "research:demo-1",
+  "data": {
+    "result": {
+      "task_id": "demo-1",
+      "description": "Produce a ChronicleOS local demo run with seeded memory and artifacts",
+      "sources": [
+        {
+          "title": "Task brief",
+          "content": "Produce a ChronicleOS local demo run with seeded memory and artifacts"
+        },
+        {
+          "title": "Workflow approach",
+          "content": "Use the live dashboard to submit the task, wait for the agents to complete, and review the returned outputs."
+        },
+        {
+          "title": "Verification step",
+          "content": "Open history, memory, and artifact pages to confirm the persisted results are visible."
+        }
+      ],
+      "summary": "ChronicleOS should produce a chronicleos local demo run with seeded memory and artifacts; start by using the dashboard task launcher, then inspect the persisted memory and artifact outputs after the workflow completes.",
+      "created_at": "2026-06-25T13:12:21.114686"
+    },
+    "walrus_cid": "local://demo-1_research.json",
+    "confidence": 0.72
+  },
+  "metadata": {},
+  "agent": "research",
+  "timestamp": "2026-06-25T12:12:21.155382Z",
+  "saved_at": "2026-06-25T12:12:21.155382Z",
+  "proof": "local:research%3Ademo-1"
+}
