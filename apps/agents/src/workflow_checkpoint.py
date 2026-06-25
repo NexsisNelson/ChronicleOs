@@ -68,9 +68,13 @@ def _unwrap_payload(entry: Dict[str, Any]) -> Dict[str, Any]:
     return data if isinstance(data, dict) else entry
 
 
-def restore_research_result(payload: Optional[Dict[str, Any]]) -> Optional[ResearchResult]:
-    if not payload:
+def restore_research_result(payload: Optional[Any]) -> Optional[ResearchResult]:
+    if payload is None:
         return None
+    if isinstance(payload, ResearchResult):
+        return payload
+    if not isinstance(payload, dict):
+        payload = {"task_id": str(payload)}
     return ResearchResult(
         task_id=payload.get("task_id", ""),
         sources=payload.get("sources", []),
@@ -82,9 +86,13 @@ def restore_research_result(payload: Optional[Dict[str, Any]]) -> Optional[Resea
     )
 
 
-def restore_architecture_result(payload: Optional[Dict[str, Any]]) -> Optional[ArchitectureResult]:
-    if not payload:
+def restore_architecture_result(payload: Optional[Any]) -> Optional[ArchitectureResult]:
+    if payload is None:
         return None
+    if isinstance(payload, ArchitectureResult):
+        return payload
+    if not isinstance(payload, dict):
+        payload = {"task_id": str(payload)}
     return ArchitectureResult(
         task_id=payload.get("task_id", ""),
         artifacts=payload.get("artifacts", []),
@@ -94,9 +102,13 @@ def restore_architecture_result(payload: Optional[Dict[str, Any]]) -> Optional[A
     )
 
 
-def restore_audit_result(payload: Optional[Dict[str, Any]]) -> Optional[AuditResult]:
-    if not payload:
+def restore_audit_result(payload: Optional[Any]) -> Optional[AuditResult]:
+    if payload is None:
         return None
+    if isinstance(payload, AuditResult):
+        return payload
+    if not isinstance(payload, dict):
+        payload = {"task_id": str(payload)}
     return AuditResult(
         task_id=payload.get("task_id", ""),
         findings=payload.get("findings", []),

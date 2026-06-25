@@ -1,6 +1,6 @@
 {
-  "sessionId": "task-1",
-  "taskFilePath": "data/task-requests/task-1.task.txt",
-  "metadataPath": "data/task-requests/task-1.json",
-  "submittedAt": "2026-06-21T19:22:52.026Z"
+  "sessionId": "task-date-check-ui",
+  "taskFilePath": "data/task-requests/task-date-check-ui.task.txt",
+  "metadataPath": "data/task-requests/task-date-check-ui.json",
+  "submittedAt": "2026-06-25T13:41:43.336Z"
 }

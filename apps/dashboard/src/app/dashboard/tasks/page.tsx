@@ -66,6 +66,33 @@ export default function TaskLauncherPage() {
   const [runResult, setRunResult] = useState<RunResult | null>(null)
 
   const taskFileContent = useMemo(() => task.trim() || defaultTask, [task])
+  const responsePreview = useMemo(() => {
+    if (!runResult) {
+      return null
+    }
+
+    if (runResult.result?.research?.summary) {
+      return runResult.result.research.summary
+    }
+
+    if (runResult.result?.audit?.feedback) {
+      return runResult.result.audit.feedback
+    }
+
+    if (runResult.result?.architecture?.synthesisNotes) {
+      return runResult.result.architecture.synthesisNotes
+    }
+
+    if (runResult.stdout?.trim()) {
+      return runResult.stdout.trim()
+    }
+
+    if (runResult.stderr?.trim()) {
+      return runResult.stderr.trim()
+    }
+
+    return null
+  }, [runResult])
   const powerShellCommand = useMemo(
     () => `..\\.venv\\Scripts\\python.exe apps\\agents\\main.py --task ${escapePowerShellArgument(taskFileContent)} --session-id ${escapePowerShellArgument(sessionId || defaultSessionId)}`,
     [sessionId, taskFileContent]
@@ -331,6 +358,13 @@ export default function TaskLauncherPage() {
                   <ResultStat label="Artifacts" value={String(runResult.result.architecture?.artifacts.length ?? 0)} />
                   <ResultStat label="Quality" value={`${runResult.result.audit?.qualityScore ?? 0}%`} />
                 </div>
+
+                {responsePreview && (
+                  <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                    <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Task response</p>
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-100">{responsePreview}</p>
+                  </div>
+                )}
 
                 <div className="mt-4 space-y-3">
                   {runResult.result.research?.summary && (

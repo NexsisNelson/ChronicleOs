@@ -44,6 +44,41 @@ function extractArtifactCids(entry: MemoryEntry): string[] {
   return Array.from(cids)
 }
 
+function extractResponsePreview(entry: MemoryEntry): string | null {
+  const data = entry.data
+  if (!data) {
+    return null
+  }
+
+  const result = data.result as Record<string, unknown> | undefined
+  const summary = typeof result?.summary === 'string' ? result.summary : null
+  if (summary) {
+    return summary
+  }
+
+  const synthesisNotes = typeof data.synthesis_notes === 'string' ? data.synthesis_notes : null
+  if (synthesisNotes) {
+    return synthesisNotes
+  }
+
+  const feedback = typeof data.feedback === 'string' ? data.feedback : null
+  if (feedback) {
+    return feedback
+  }
+
+  const response = typeof data.response === 'string' ? data.response : null
+  if (response) {
+    return response
+  }
+
+  const output = typeof data.output === 'string' ? data.output : null
+  if (output) {
+    return output
+  }
+
+  return null
+}
+
 export default function HistoryPage() {
   const [entries, setEntries] = useState<MemoryEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -82,6 +117,9 @@ export default function HistoryPage() {
     loadHistory()
   }, [])
 
+  const latestResponseEntry = entries.find((entry) => extractResponsePreview(entry))
+  const latestResponseText = latestResponseEntry ? extractResponsePreview(latestResponseEntry) : null
+
   return (
     <div className="space-y-8">
       <section className="surface rounded-[28px] p-6 sm:p-8">
@@ -91,6 +129,14 @@ export default function HistoryPage() {
           This view surfaces the memory history produced by the agent workflow so you can inspect what changed, when it changed, and which agent wrote it.
         </p>
       </section>
+
+      {latestResponseText && (
+        <section className="surface rounded-[28px] border border-teal-400/20 bg-teal-400/10 p-6 sm:p-8">
+          <p className="text-xs uppercase tracking-[0.28em] text-teal-200/80">Latest task response</p>
+          <h2 className="mt-3 text-2xl font-semibold text-white">{latestResponseEntry?.key ?? 'Latest workflow response'}</h2>
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-100">{latestResponseText}</p>
+        </section>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
         <div className="surface rounded-[28px] p-6 sm:p-8">
