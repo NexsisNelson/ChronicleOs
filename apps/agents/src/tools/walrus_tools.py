@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional, Set
 
 import httpx
 
@@ -11,6 +11,7 @@ from src.config import get_config
 from src.tools.local_store import read_walrus_blob as read_local_walrus_blob
 from src.tools.local_store import save_walrus_blob as save_local_walrus_blob
 from src.tools.local_store import walrus_store_dir
+from src.tools.memwal_tools import list_memwal_keys, read_from_memwal
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,21 @@ def _local_fallback_path(filename: Optional[str]) -> Path:
     return local_dir / (filename or "walrus_fallback.bin")
 
 
+MEMWAL_RETRY_ATTEMPTS = 3
+MEMWAL_RETRY_DELAY = 0.5
+
+
+async def _retry_http_operation(operation, *args, **kwargs):
+    for attempt in range(1, MEMWAL_RETRY_ATTEMPTS + 1):
+        try:
+            return await operation(*args, **kwargs)
+        except Exception as exc:
+            logger.warning("Walrus HTTP attempt %s failed: %s", attempt, exc)
+            if attempt == MEMWAL_RETRY_ATTEMPTS:
+                raise
+            await asyncio.sleep(MEMWAL_RETRY_DELAY * attempt)
+
+
 async def upload_to_walrus(
     data: bytes,
     filename: Optional[str] = None,
@@ -61,52 +77,23 @@ async def upload_to_walrus(
         return save_local_walrus_blob(filename or "artifact.bin", data, content_type)
 
     upload_url = _walrus_url(publisher_endpoint, config.walrus_upload_path)
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.put(
-            upload_url,
-            content=data,
-            headers={"Content-Type": content_type or "application/octet-stream"},
-        )
-        response.raise_for_status()
-        payload = response.json()
-        cid = _extract_cid(payload)
-        if not cid:
-            raise ValueError("Walrus upload succeeded but no blob identifier was returned")
-        return cid
-
-
-async def download_from_walrus(cid: str) -> bytes:
-    """Download data from Walrus by CID.
-
-    Args:
-        cid: Content ID of data to download
-
-    Returns:
-        Raw bytes of downloaded data
-    """
-    if cid.startswith("local://"):
-        return read_local_walrus_blob(cid)
-
-    config = get_config()
-    aggregator_endpoint = _resolve_walrus_endpoint(config, "walrus_aggregator_endpoint")
-    if not aggregator_endpoint:
-        raise ValueError("Walrus endpoint is not configured")
-
-    download_url = _walrus_url(aggregator_endpoint, config.walrus_download_path, cid=cid)
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.get(download_url)
-        response.raise_for_status()
-        return response.content
-
-
-async def _delay_retry(attempt: int) -> None:
-    """Pause briefly between retry attempts."""
-    await asyncio.sleep(0.5 * attempt)
-
-
-def _extract_cid(payload: dict) -> Optional[str]:
-    if payload is None:
-        return None
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await _retry_http_operation(
+                client.put,
+                upload_url,
+                content=data,
+                headers={"Content-Type": content_type or "application/octet-stream"},
+            )
+            response.raise_for_status()
+            payload = response.json()
+            cid = _extract_cid(payload)
+            if not cid:
+                raise ValueError("Walrus upload succeeded but no blob identifier was returned")
+            return cid
+    except Exception as exc:
+        logger.warning("Walrus upload failed, storing artifact locally instead: %s", exc)
+        return save_local_walrus_blob(filename or "artifact.bin", data, content_type)
     if isinstance(payload, dict):
         return (
             payload.get("cid")
@@ -122,24 +109,54 @@ def _extract_cid(payload: dict) -> Optional[str]:
     return None
 
 
+def _extract_walrus_cids(entry: Dict[str, Any]) -> Set[str]:
+    cids: Set[str] = set()
+    if not isinstance(entry, dict):
+        return cids
+
+    if "walrus_cid" in entry and isinstance(entry["walrus_cid"], str):
+        cids.add(entry["walrus_cid"])
+
+    if "walrus_cids" in entry and isinstance(entry["walrus_cids"], list):
+        for cid in entry["walrus_cids"]:
+            if isinstance(cid, str):
+                cids.add(cid)
+
+    if "artifacts" in entry and isinstance(entry["artifacts"], list):
+        for artifact in entry["artifacts"]:
+            if isinstance(artifact, dict):
+                cid = artifact.get("walrus_cid")
+                if isinstance(cid, str):
+                    cids.add(cid)
+
+    if "result" in entry and isinstance(entry["result"], dict):
+        cid = entry["result"].get("walrus_cid")
+        if isinstance(cid, str):
+            cids.add(cid)
+
+    return cids
+
+
 async def list_walrus_objects() -> list:
-    """List stored artifacts when remote listing is unavailable.
-
-    Remote Walrus listing is not implemented because the public HTTP APIs expose
-    blob reads, not a stable object listing endpoint.
-    """
+    """List stored artifacts using known Walrus references and local fallback storage."""
     config = get_config()
-    if _resolve_walrus_endpoint(config, "walrus_publisher_endpoint") or _resolve_walrus_endpoint(config, "walrus_aggregator_endpoint"):
-        return []
-
     local_dir = _local_artifacts_dir()
     walrus_dir = walrus_store_dir()
-    candidates = []
+    object_ids: Set[str] = set()
 
     if local_dir.exists():
-        candidates.extend(local_dir.iterdir())
+        object_ids.update(str(path.name) for path in local_dir.iterdir() if path.is_file())
     if walrus_dir.exists():
-        candidates.extend(walrus_dir.iterdir())
+        object_ids.update(str(path.name) for path in walrus_dir.iterdir() if path.is_file())
 
-    files = [path for path in candidates if path.is_file()]
-    return [str(path.name) for path in sorted(files, key=lambda path: path.name)]
+    if _resolve_walrus_endpoint(config, "walrus_publisher_endpoint") or _resolve_walrus_endpoint(config, "walrus_aggregator_endpoint"):
+        try:
+            keys = await list_memwal_keys()
+            entries = await asyncio.gather(*(read_from_memwal(key) for key in keys), return_exceptions=True)
+            for entry in entries:
+                if isinstance(entry, dict):
+                    object_ids.update(_extract_walrus_cids(entry))
+        except Exception as exc:
+            logger.warning("Unable to gather known Walrus artifacts from MemWal: %s", exc)
+
+    return sorted(object_ids)
